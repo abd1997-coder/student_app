@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:y_player/y_player.dart';
+import 'package:youtube_muxer_2025/youtube_muxer_2025.dart';
 
 class PlayerWidget extends StatefulWidget {
   const PlayerWidget({
@@ -9,7 +10,7 @@ class PlayerWidget extends StatefulWidget {
     required this.onQualitiesReady,
   });
   final String videourl;
-  final Function(List<QualityOption> qualities) onQualitiesReady;
+  final Function(List<VideoQuality> qualities) onQualitiesReady;
   @override
   State<PlayerWidget> createState() => _PlayerWidgetState();
 }
@@ -19,7 +20,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   bool hasInternet = true;
   bool isInitialized = false;
   bool playerFailed = false;
-  List<QualityOption> availableQualities = [];
+  List<VideoQuality> availableQualities = [];
 
   @override
   void initState() {
@@ -36,7 +37,6 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     });
   }
 
- 
   @override
   Widget build(BuildContext context) {
     if (!hasInternet || playerFailed) {
@@ -86,19 +86,17 @@ class _PlayerWidgetState extends State<PlayerWidget> {
 
   void handleController(YPlayerController value) async {
     controller = value;
-
+    YoutubeDownloader downloader = YoutubeDownloader();
+    List<VideoQuality> qualities = await downloader.getQualities(
+      widget.videourl,
+    );
     try {
-      final qualities = controller?.getAvailableQualities() ?? [];
       setState(() {
         availableQualities = qualities;
       });
-      print('Available video qualities:');
-      for (var quality in qualities) {
-        print('Quality: ${quality.height}p - URL: ${quality.url}');
-      }
 
-      if (qualities.isNotEmpty) {
-        await controller?.setQuality(qualities.last.height);
+      if (availableQualities.isNotEmpty) {
+        await controller?.setQuality(144);
       }
       widget.onQualitiesReady(qualities);
       controller?.play();

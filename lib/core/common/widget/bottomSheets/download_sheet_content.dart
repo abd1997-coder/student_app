@@ -1,17 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:student_app/core/core.dart';
-import 'package:y_player/y_player.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:dio/dio.dart';
-import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter_new/ffmpeg_session.dart';
-import 'package:ffmpeg_kit_flutter_new/return_code.dart';
+import 'package:youtube_muxer_2025/youtube_muxer_2025.dart';
+import 'package:youtube_muxer_2025/youtube_muxer_2025.dart' as models;
+
 import 'dart:io';
 
 void downloadSheet({
   required BuildContext context,
-  required List<QualityOption> qualities,
+  required String videoUrl,
   required Function(String) onQualitySelected,
 }) {
   showModalBottomSheet(
@@ -22,7 +21,7 @@ void downloadSheet({
     backgroundColor: Colors.transparent,
     builder:
         (_) => DownloadSheetContent(
-          qualities: qualities,
+          videoUrl: videoUrl,
           onQualitySelected: onQualitySelected,
         ),
   );
@@ -31,24 +30,29 @@ void downloadSheet({
 class DownloadSheetContent extends StatefulWidget {
   const DownloadSheetContent({
     super.key,
-    required this.qualities,
+    required this.videoUrl,
     required this.onQualitySelected,
   });
-  final List<QualityOption> qualities;
+  final String videoUrl;
   final Function(String) onQualitySelected;
+
   @override
   State<DownloadSheetContent> createState() => _DownloadSheetContentState();
 }
 
 class _DownloadSheetContentState extends State<DownloadSheetContent> {
-  QualityOption? selectedValue;
+  VideoQuality? selectedValue;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  final _downloader = YoutubeDownloader();
+  bool _isLoading = true;
+  List<VideoQuality> _qualities = [];
 
   @override
   void initState() {
     super.initState();
     _initializeNotifications();
+    _loadQualities();
   }
 
   Future<void> _initializeNotifications() async {
@@ -59,6 +63,27 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
       android: androidInitialize,
     );
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  Future<void> _loadQualities() async {
+    try {
+      setState(() => _isLoading = true);
+      final qualities = await _downloader.getQualities(widget.videoUrl);
+      setState(() {
+        _qualities = qualities;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading qualities: $e');
+      setState(() => _isLoading = false);
+      if (mounted) {
+        showSnackBar(
+          context: context,
+          message: 'فشل في تحميل جودات الفيديو',
+          isError: true,
+        );
+      }
+    }
   }
 
   Future<void> _showProgressNotification(
@@ -101,7 +126,6 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- title ---
             const SizedBox(height: 24),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -110,108 +134,79 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            // sound
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children:
-                  widget.qualities
-                      .sublist(1, widget.qualities.length - 1)
-                      .map(
-                        (quality) => Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                ),
-                                child: Text(
-                                  quality.height.toString(),
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.normal,
+            if (_isLoading)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            else
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children:
+                    _qualities
+                        .map(
+                          (VideoQuality quality) => Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ),
+                                  child: Text(
+                                    quality.quality.toString(),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Text(
-                              quality.label.toString(),
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal,
+                              Text(
+                                quality.fps.toString(),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.normal,
+                                ),
                               ),
-                            ),
-                            Radio<QualityOption>(
-                              value: quality,
-                              groupValue: selectedValue,
-                              onChanged: (QualityOption? value) {
-                                setState(() {
-                                  selectedValue = value!;
-                                  widget.onQualitySelected(quality.url);
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      )
-                      .toList(),
-            ),
-
-            // Container(
-            //   margin: const EdgeInsets.symmetric(horizontal: 8),
-            //   child: const Text(
-            //     "تحميل الصوت ",
-            //     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            //   ),
-            // ),
-            // Row(
-            //   children: [
-            //     Expanded(
-            //       child: Container(
-            //         margin: const EdgeInsets.symmetric(horizontal: 8),
-            //         child: const Text(
-            //           "دقة منخفضة 240",
-            //           style: TextStyle(
-            //             fontSize: 16,
-            //             fontWeight: FontWeight.normal,
-            //           ),
-            //         ),
-            //       ),
-            //     ),
-            //     const Text(
-            //       "2.3م.ب",
-            //       style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-            //     ),
-            //     Radio<String>(
-            //       value: selectedValue?.url ?? "",
-            //       groupValue: selectedValue?.url ?? "",
-            //       onChanged: (value) {
-            //         setState(() {
-            //           selectedValue = value;
-            //         });
-            //       },
-            //     ),
-            //   ],
-            // ),
-            const SizedBox(height: 20),
-            GlobalButton(
-              height: 50,
-              controller: GlobalButtonController(),
-              onPressed: () async {
-                context.maybePop();
-                if (selectedValue != null) {
-                  startDownload(selectedValue!);
-                }
-              },
-              borderRadius: 50,
-              child: Text(
-                "تحميل",
-                style: context.bodyMedium?.copyWith(
-                  color: context.colorScheme.surface,
-                  fontWeight: FontWeight.w700,
-                ),
+                              Radio<VideoQuality>(
+                                value: quality,
+                                groupValue: selectedValue,
+                                onChanged: (VideoQuality? value) {
+                                  setState(() {
+                                    selectedValue = value!;
+                                    widget.onQualitySelected(quality.url);
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        )
+                        .toList(),
               ),
-            ),
+            const SizedBox(height: 20),
+            _isLoading
+                ? const SizedBox()
+                : GlobalButton(
+                  height: 50,
+                  controller: GlobalButtonController(),
+                  onPressed: () async {
+                    context.maybePop();
+                    if (selectedValue != null) {
+                      startDownload(selectedValue!);
+                    }
+                  },
+                  borderRadius: 50,
+                  child: Text(
+                    "تحميل",
+                    style: context.bodyMedium?.copyWith(
+                      color: context.colorScheme.surface,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
             const SizedBox(height: 20),
           ],
         ),
@@ -219,130 +214,90 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
     );
   }
 
-  Future<void> startDownload(QualityOption quality) async {
-    final dio = Dio(
-      BaseOptions(
-        headers: {
-          'User-Agent':
-              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36',
-        },
-      ),
-    );
-
+  Future<void> startDownload(VideoQuality quality) async {
     try {
-      final appDir = await getApplicationDocumentsDirectory();
-      final tempDir = await getDownloadsDirectory();
+      // Add URL validation
+      if (widget.videoUrl.isEmpty) {
+        throw Exception('Invalid URL: URL is empty');
+      }
 
-      // Create a downloads directory if it doesn't exist
-      final downloadsDir = Directory('${appDir.path}/downloads');
+      final Directory appDir = await getApplicationDocumentsDirectory();
+      final Directory downloadsDir = Directory('${appDir.path}/downloads');
       if (!downloadsDir.existsSync()) {
         downloadsDir.createSync();
       }
 
-      // Temporary files for video and audio
-      final tempVideoPath = '${tempDir?.path}/temp_video.mp4';
-      final tempAudioPath = '${tempDir?.path}/temp_audio.mp3';
-      final outputPath = '${downloadsDir.path}/video_${quality.height}p.mp4';
-
-      final notificationId = DateTime.now().millisecondsSinceEpoch.remainder(
-        100000,
-      );
+      final int notificationId = DateTime.now().millisecondsSinceEpoch
+          .remainder(100000);
 
       if (!mounted) return;
       showSnackBar(context: context, message: 'جاري التحميل...');
 
-      // Download video
-      await dio.download(
-        quality.url,
-        tempVideoPath,
-        onReceiveProgress: (received, total) {
-          if (total != -1) {
-            final progress = (received / total * 50).toInt(); // First 50%
-            _showProgressNotification(progress, notificationId);
+      // Start the download using YoutubeDownloader
+      final Stream<DownloadProgress> stream = _downloader.downloadVideo(
+        models.VideoQuality(
+          quality: quality.quality,
+          url: widget.videoUrl,
+          size: 0,
+          container: 'mp4',
+          codec: 'avc1',
+          bitrate: 0,
+          fps: 30,
+        ),
+        widget.videoUrl,
+      );
+      stream.listen(
+        (DownloadProgress progress) async {
+          final int progressPercent = (progress.progress * 100).round();
+          await _showProgressNotification(progressPercent, notificationId);
+          if (progress.progress >= 1.0) {
+            // Download completed
+            const androidDetails = AndroidNotificationDetails(
+              'download_channel',
+              'Downloads',
+              channelDescription: 'Download complete notification',
+              importance: Importance.high,
+              priority: Priority.high,
+            );
+
+            await flutterLocalNotificationsPlugin.show(
+              notificationId,
+              'اكتمل التحميل',
+              'تم تحميل الفيديو بنجاح بجودة ${quality.quality}p',
+              const NotificationDetails(android: androidDetails),
+            );
+
+            if (!mounted) return;
+            showSnackBar(
+              context: context,
+              message: 'تم تحميل الفيديو بنجاح بجودة ${quality.quality}p',
+              isError: false,
+            );
           }
         },
-      );
-
-      // Get audio URL from manifest (using index 1 which should contain audio)
-      final audioUrl = widget.qualities[1].url;
-      print('Audio URL: $audioUrl');
-
-      // Download audio
-      await dio.download(
-        audioUrl,
-        tempAudioPath,
-        onReceiveProgress: (received, total) {
-          if (total != -1) {
-            final progress = 50 + (received / total * 40).toInt(); // Next 40%
-            _showProgressNotification(progress, notificationId);
-          }
+        onError: (e) {
+          const AndroidNotificationDetails androidDetails =
+              AndroidNotificationDetails(
+                'download_channel',
+                'Downloads',
+                channelDescription: 'Download Failed ',
+                importance: Importance.high,
+                priority: Priority.high,
+              );
+          flutterLocalNotificationsPlugin.show(
+            notificationId,
+            'تحميل الفيديو',
+            'فشل تحميل الفيديو: $e',
+            const NotificationDetails(android: androidDetails),
+          );
         },
       );
-
-      print('tempVideoPath: $tempVideoPath');
-      print('tempAudioPath: $tempAudioPath');
-      print('outputPath: $outputPath');
-      // Show merging progress
-      _showProgressNotification(90, notificationId);
-
-      // Check if files exist
-      if (!File(tempVideoPath).existsSync() ||
-          !File(tempAudioPath).existsSync()) {
-        throw Exception('Downloaded files not found');
+    } catch (e, stackTrace) {
+      // Enhanced error logging
+      if (kDebugMode) {
+        print('Download error: $e');
+        print('Stack trace: $stackTrace');
       }
-
-      print('Starting FFmpeg merge...');
-      // Merge video and audio using FFmpeg with more detailed command
-      final FFmpegSession session = await FFmpegKit.execute(
-        '-i "${tempVideoPath.replaceAll('\\', '/')}" -i "${tempAudioPath.replaceAll('\\', '/')}" -c:v copy -c:a aac -strict experimental "${outputPath.replaceAll('\\', '/')}"',
-      );
-
-      final ReturnCode? returnCode = await session.getReturnCode();
-      print('FFmpeg return code: ${returnCode?.getValue() ?? "unknown"}');
-
-      // Get FFmpeg output for debugging
-      final output = await session.getOutput();
-      print('FFmpeg output: $output');
-
-      // Clean up temporary files
-      try {
-        // if (File(tempVideoPath).existsSync()) File(tempVideoPath).deleteSync();
-        // if (File(tempAudioPath).existsSync()) File(tempAudioPath).deleteSync();
-      } catch (e) {
-        print('Error cleaning up temp files: $e');
-      }
-
-      if (returnCode?.isValueSuccess() ?? false) {
-        // Show completion notification
-        const androidDetails = AndroidNotificationDetails(
-          'download_channel',
-          'Downloads',
-          channelDescription: 'Download progress notifications',
-          importance: Importance.high,
-          priority: Priority.high,
-        );
-
-        await flutterLocalNotificationsPlugin.show(
-          notificationId,
-          'اكتمل التحميل',
-          'تم تحميل الفيديو بنجاح بجودة ${quality.height}p',
-          const NotificationDetails(android: androidDetails),
-        );
-
-        if (!mounted) return;
-        showSnackBar(
-          context: context,
-          message: 'تم تحميل الفيديو بنجاح بجودة ${quality.height}p',
-          isError: false,
-        );
-        print('Video saved to: $outputPath');
-      } else {
-        throw Exception(
-          'Failed to merge video and audio. FFmpeg return code: ${returnCode?.getValue() ?? "unknown"}',
-        );
-      }
-    } catch (e) {
-      print('Download error: $e');
       if (mounted) {
         showSnackBar(
           context: context,

@@ -8,12 +8,14 @@ class QualityOption {
   final String label;
 
   final String url;
+  final String audioUrl;
 
   /// Creates a new quality option
   QualityOption({
     required this.height,
     required this.label,
     required this.url,
+    required this.audioUrl,
   });
 
   @override

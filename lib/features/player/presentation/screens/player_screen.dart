@@ -5,6 +5,7 @@ import 'package:student_app/core/common/widget/bottomSheets/question_sheet_conte
 import 'package:student_app/core/core.dart';
 import 'package:student_app/features/player/presentation/widgets/player_widget.dart';
 import 'package:y_player/y_player.dart';
+import 'package:youtube_muxer_2025/youtube_muxer_2025.dart';
 
 @RoutePage()
 class PlayerScreen extends StatefulWidget {
@@ -28,9 +29,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
     'الملفات',
   ];
   int selectedCategory = 0;
-  List<QualityOption> _availableQualities = [];
+  List<VideoQuality> _availableQualities = [];
 
-  void _handleQualitiesReady(List<QualityOption> qualities) {
+  void _handleQualitiesReady(List<VideoQuality> qualities) {
     setState(() {
       _availableQualities = qualities;
     });
@@ -115,7 +116,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                 onTap: () {
                                   downloadSheet(
                                     context: context,
-                                    qualities: _availableQualities,
+                                    videoUrl: widget.videoModel.videoUrl!,
                                     onQualitySelected: (quality) {
                                       print(quality);
                                     },

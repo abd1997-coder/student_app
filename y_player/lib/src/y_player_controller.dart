@@ -83,9 +83,10 @@ class YPlayerController {
 
     // Always include automatic option
     final List<QualityOption> qualities = [
-      QualityOption(height: 0, label: "Auto", url: "")
+      QualityOption(height: 0, label: "Auto", url: "", audioUrl: "")
     ];
-
+    print("audio url form manifist");
+    print(_currentManifest!.audioOnly.withHighestBitrate().url.toString());
     // Add available video qualities
     for (var stream in _currentManifest!.videoOnly) {
       // Get height from the videoResolution property
@@ -97,6 +98,7 @@ class YPlayerController {
           height: height,
           label: "${height}p",
           url: stream.url.toString(),
+          audioUrl: _currentManifest!.audioOnly.withHighestBitrate().url.toString(),
         ));
       }
     }

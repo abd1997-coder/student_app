@@ -24,7 +24,7 @@ dependencies:
   freezed_annotation: ^2.4.4
   get_it: ^8.0.3
   logger: ^2.5.0
-  permission_handler: ^11.4.0
+  permission_handler: ^12.0.0+1
   shared_preferences: ^2.5.2
   flutter_local_notifications: ^18.0.1
   firebase_messaging: ^15.2.4
@@ -43,12 +43,15 @@ dependencies:
   shimmer: ^3.0.0
   y_player:
     path: ./y_player
+  youtube_muxer_2025:
+    path: ./youtube_muxer_2025
 
   root_checker_plus: ^0.0.4
   collection: ^1.19.1
   intl: ^0.19.0
   widgets_easier: ^0.0.10
-  ffmpeg_kit_flutter_new: ^1.6.1
+
+
 
 
 
