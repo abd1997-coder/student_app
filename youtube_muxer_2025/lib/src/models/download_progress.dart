@@ -21,6 +21,8 @@ class DownloadProgress {
   /// The title of the video being downloaded.
   final String? title;
 
+  /// The list of chunks of the video being downloaded.
+
   /// Creates a new download progress instance.
   const DownloadProgress({
     required this.progress,

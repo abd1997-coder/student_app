@@ -96,6 +96,7 @@ class YoutubeDownloader {
   Stream<DownloadProgress> downloadVideo(
     models.VideoQuality quality,
     String videoUrl,
+    String videoTitle,
   ) async* {
     try {
       final video = await _yt.videos.get(videoUrl);
@@ -111,11 +112,11 @@ class YoutubeDownloader {
           .reduce((a, b) =>
               a.bitrate.bitsPerSecond > b.bitrate.bitsPerSecond ? a : b);
 
-      final dir = await getDownloadsDirectory();
-      final tempVideoPath = '${dir!.path}/temp_video.mp4';
-      final tempAudioPath = '${dir.path}/temp_audio.m4a';
-      final outputPath = '${dir.path}/${_sanitize(video.title)}.mp4';
-      // final outputPath = '${dir.path}/abdalrazzak.mp4';
+      final dir = await getApplicationDocumentsDirectory();
+      final tempVideoPath = '${dir.path}/downloads/${videoTitle}_video.mp4';
+      final tempAudioPath = '${dir.path}/downloads/${videoTitle}_audio.m4a';
+      // final outputPath = '${dir.path}/${_sanitize(video.title)}.mp4';
+      final outputPath = '${dir.path}/downloads/${videoTitle}_mearged.mp4';
 
       // Video download with progress
       final videoFile = File(tempVideoPath).openWrite();
@@ -215,9 +216,9 @@ class YoutubeDownloader {
   }
 
   /// Sanitizes a filename by replacing invalid characters.
-  String _sanitize(String fileName) {
-    return fileName
-        .replaceAll(RegExp(r'[<>:"/\\|?*]'), '_')
-        .replaceAll(RegExp(r'\s+'), '_');
-  }
+  // String _sanitize(String fileName) {
+  //   return fileName
+  //       .replaceAll(RegExp(r'[<>:"/\\|?*]'), '_')
+  //       .replaceAll(RegExp(r'\s+'), '_');
+  // }
 }

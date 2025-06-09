@@ -5,13 +5,21 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:youtube_muxer_2025/youtube_muxer_2025.dart';
 import 'package:youtube_muxer_2025/youtube_muxer_2025.dart' as models;
-
+import 'dart:convert';
 import 'dart:io';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:path_provider/path_provider.dart';
+import 'package:crypto/crypto.dart';
+import 'package:path/path.dart' as p;
 
 void downloadSheet({
   required BuildContext context,
   required String videoUrl,
   required Function(String) onQualitySelected,
+  required String videoTitle,
 }) {
   showModalBottomSheet(
     context: context,
@@ -23,6 +31,7 @@ void downloadSheet({
         (_) => DownloadSheetContent(
           videoUrl: videoUrl,
           onQualitySelected: onQualitySelected,
+          videoTitle: videoTitle,
         ),
   );
 }
@@ -32,10 +41,11 @@ class DownloadSheetContent extends StatefulWidget {
     super.key,
     required this.videoUrl,
     required this.onQualitySelected,
+    required this.videoTitle,
   });
   final String videoUrl;
   final Function(String) onQualitySelected;
-
+  final String videoTitle;
   @override
   State<DownloadSheetContent> createState() => _DownloadSheetContentState();
 }
@@ -44,9 +54,9 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
   VideoQuality? selectedValue;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  final _downloader = YoutubeDownloader();
+  final YoutubeDownloader _downloader = YoutubeDownloader();
   bool _isLoading = true;
-  List<VideoQuality> _qualities = [];
+  List<VideoQuality> _qualities = <VideoQuality>[];
 
   @override
   void initState() {
@@ -56,19 +66,19 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
   }
 
   Future<void> _initializeNotifications() async {
-    const androidInitialize = AndroidInitializationSettings(
-      'mipmap/ic_launcher',
-    );
-    const initializationSettings = InitializationSettings(
-      android: androidInitialize,
-    );
+    const AndroidInitializationSettings androidInitialize =
+        AndroidInitializationSettings('mipmap/ic_launcher');
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: androidInitialize);
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
   Future<void> _loadQualities() async {
     try {
       setState(() => _isLoading = true);
-      final qualities = await _downloader.getQualities(widget.videoUrl);
+      final List<VideoQuality> qualities = await _downloader.getQualities(
+        widget.videoUrl,
+      );
       setState(() {
         _qualities = qualities;
         _isLoading = false;
@@ -90,18 +100,19 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
     int progress,
     int notificationId,
   ) async {
-    final androidDetails = AndroidNotificationDetails(
-      'download_channel',
-      'Downloads',
-      channelDescription: 'Download progress notifications',
-      importance: Importance.high,
-      priority: Priority.high,
-      showProgress: true,
-      onlyAlertOnce: true,
-      maxProgress: 100,
-      progress: progress,
-      autoCancel: false,
-    );
+    final AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'download_channel',
+          'Downloads',
+          channelDescription: 'Download progress notifications',
+          importance: Importance.high,
+          priority: Priority.high,
+          showProgress: true,
+          onlyAlertOnce: true,
+          maxProgress: 100,
+          progress: progress,
+          autoCancel: false,
+        );
 
     await flutterLocalNotificationsPlugin.show(
       notificationId,
@@ -125,7 +136,7 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             const SizedBox(height: 24),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -146,45 +157,35 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children:
-                    _qualities
-                        .map(
-                          (VideoQuality quality) => Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                  ),
-                                  child: Text(
-                                    quality.quality.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                                  ),
-                                ),
+                    _qualities.map((VideoQuality quality) {
+                      return Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 8),
+                              child: Text(
+                                quality.quality.toString(),
+                                style: const TextStyle(fontSize: 16),
                               ),
-                              Text(
-                                quality.fps.toString(),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
-                              Radio<VideoQuality>(
-                                value: quality,
-                                groupValue: selectedValue,
-                                onChanged: (VideoQuality? value) {
-                                  setState(() {
-                                    selectedValue = value!;
-                                    widget.onQualitySelected(quality.url);
-                                  });
-                                },
-                              ),
-                            ],
+                            ),
                           ),
-                        )
-                        .toList(),
+                          Text(
+                            quality.fps.toString(),
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          Radio<VideoQuality>(
+                            value: quality,
+                            groupValue: selectedValue,
+                            onChanged: (VideoQuality? value) {
+                              setState(() {
+                                selectedValue = value!;
+                                widget.onQualitySelected(quality.url);
+                              });
+                            },
+                          ),
+                        ],
+                      );
+                    }).toList(),
               ),
             const SizedBox(height: 20),
             _isLoading
@@ -195,7 +196,7 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
                   onPressed: () async {
                     context.maybePop();
                     if (selectedValue != null) {
-                      startDownload(selectedValue!);
+                      startDownload(selectedValue!, widget.videoTitle);
                     }
                   },
                   borderRadius: 50,
@@ -214,26 +215,26 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
     );
   }
 
-  Future<void> startDownload(VideoQuality quality) async {
+  Future<void> startDownload(VideoQuality quality, String videoTitle) async {
+    final Directory appDir = await getApplicationDocumentsDirectory();
+    final Directory downloadsDir = Directory('${appDir.path}/downloads');
+    final Directory encryptedDir = Directory('${appDir.path}/encrypted');
+
     try {
-      // Add URL validation
       if (widget.videoUrl.isEmpty) {
         throw Exception('Invalid URL: URL is empty');
       }
-
-      final Directory appDir = await getApplicationDocumentsDirectory();
-      final Directory downloadsDir = Directory('${appDir.path}/downloads');
       if (!downloadsDir.existsSync()) {
-        downloadsDir.createSync();
+        downloadsDir.createSync(recursive: true);
       }
 
       final int notificationId = DateTime.now().millisecondsSinceEpoch
           .remainder(100000);
 
       if (!mounted) return;
+
       showSnackBar(context: context, message: 'جاري التحميل...');
 
-      // Start the download using YoutubeDownloader
       final Stream<DownloadProgress> stream = _downloader.downloadVideo(
         models.VideoQuality(
           quality: quality.quality,
@@ -245,34 +246,48 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
           fps: 30,
         ),
         widget.videoUrl,
+        videoTitle,
       );
+
       stream.listen(
         (DownloadProgress progress) async {
           final int progressPercent = (progress.progress * 100).round();
           await _showProgressNotification(progressPercent, notificationId);
-          if (progress.progress >= 1.0) {
-            // Download completed
-            const androidDetails = AndroidNotificationDetails(
-              'download_channel',
-              'Downloads',
-              channelDescription: 'Download complete notification',
-              importance: Importance.high,
-              priority: Priority.high,
+        },
+        onDone: () async {
+          try {
+            if (!encryptedDir.existsSync()) {
+              encryptedDir.createSync(recursive: true);
+            }
+            await VideoEncoder().encryptFile(
+              File("${appDir.path}/downloads/${videoTitle}_mearged.mp4"),
+              '1234567890',
+              videoTitle,
             );
+            print('encryptedPath: encrypted done ');
+            const AndroidNotificationDetails androidDetails =
+                AndroidNotificationDetails(
+                  'download_channel',
+                  'Downloads',
+                  channelDescription: 'Download complete notification',
+                  importance: Importance.high,
+                  priority: Priority.high,
+                );
 
             await flutterLocalNotificationsPlugin.show(
               notificationId,
               'اكتمل التحميل',
-              'تم تحميل الفيديو بنجاح بجودة ${quality.quality}p',
+              'تم تحميل وتشفير الفيديو بنجاح بجودة ${quality.quality}p',
               const NotificationDetails(android: androidDetails),
             );
-
-            if (!mounted) return;
-            showSnackBar(
-              context: context,
-              message: 'تم تحميل الفيديو بنجاح بجودة ${quality.quality}p',
-              isError: false,
-            );
+          } catch (e) {
+            if (mounted) {
+              showSnackBar(
+                context: context,
+                message: 'فشل في تشفير الفيديو: $e',
+                isError: true,
+              );
+            }
           }
         },
         onError: (e) {
@@ -280,7 +295,7 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
               AndroidNotificationDetails(
                 'download_channel',
                 'Downloads',
-                channelDescription: 'Download Failed ',
+                channelDescription: 'Download Failed',
                 importance: Importance.high,
                 priority: Priority.high,
               );
@@ -291,12 +306,12 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
             const NotificationDetails(android: androidDetails),
           );
         },
+        cancelOnError: true,
       );
     } catch (e, stackTrace) {
-      // Enhanced error logging
       if (kDebugMode) {
-        print('Download error: $e');
-        print('Stack trace: $stackTrace');
+        print('❌ Download error: $e');
+        print('❌ Stack trace: $stackTrace');
       }
       if (mounted) {
         showSnackBar(
@@ -305,6 +320,94 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
           isError: true,
         );
       }
+    }
+  }
+}
+
+class VideoEncoder {
+  Future<String> encryptFile(
+    File inputFile,
+    String password,
+    String videoTitle,
+  ) async {
+    // Generate key
+    final encrypt.Key key = encrypt.Key.fromUtf8(
+      sha256.convert(utf8.encode(password)).toString().substring(0, 32),
+    );
+
+    // Generate a random IV
+    final encrypt.IV iv = encrypt.IV.fromSecureRandom(16);
+
+    final encrypt.Encrypter encrypter = encrypt.Encrypter(
+      encrypt.AES(key, mode: encrypt.AESMode.gcm),
+    );
+
+    final Uint8List bytes = await inputFile.readAsBytes();
+    final encrypt.Encrypted encrypted = encrypter.encryptBytes(bytes, iv: iv);
+
+    // Combine IV + encrypted bytes
+    final List<int> combined = iv.bytes + encrypted.bytes;
+
+    // Save to file
+    final Directory dir = await getApplicationDocumentsDirectory();
+    final Directory encryptedDir = Directory('${dir.path}/encrypted');
+    if (!await encryptedDir.exists()) {
+      await encryptedDir.create(recursive: true);
+    }
+
+    final String encryptedPath = '${encryptedDir.path}/$videoTitle.enc';
+    final File encryptedFile = File(encryptedPath);
+    await encryptedFile.writeAsBytes(combined);
+
+    // Optionally delete the original file
+    await deleteDownloadsFolder();
+    print('✅ encryptedPath: $encryptedPath');
+    return encryptedPath;
+  }
+
+  Future<File> decryptFile(String videoTitle, String password) async {
+    final Directory appDir = await getApplicationDocumentsDirectory();
+    final File encryptedFile = File('${appDir.path}/encrypted/$videoTitle.enc');
+    final Uint8List encryptedBytes = await encryptedFile.readAsBytes();
+
+    // Split IV + cipherText
+    final encrypt.IV iv = encrypt.IV(encryptedBytes.sublist(0, 16));
+    final Uint8List cipherText = encryptedBytes.sublist(16);
+
+    final encrypt.Key key = encrypt.Key.fromUtf8(
+      sha256.convert(utf8.encode(password)).toString().substring(0, 32),
+    );
+    final encrypt.Encrypter encrypter = encrypt.Encrypter(
+      encrypt.AES(key, mode: encrypt.AESMode.gcm),
+    );
+
+    final List<int> decryptedBytes = encrypter.decryptBytes(
+      encrypt.Encrypted(cipherText),
+      iv: iv,
+    );
+
+    final String decryptedPath = '${appDir.path}/decrypted/$videoTitle.mp4';
+    final File decryptedFile = File(decryptedPath);
+
+    final Directory decryptedDir = Directory('${appDir.path}/decrypted');
+    if (!await decryptedDir.exists()) {
+      await decryptedDir.create(recursive: true);
+    }
+
+    await decryptedFile.writeAsBytes(decryptedBytes);
+    print('✅ decryptedPath: $decryptedPath');
+    return decryptedFile;
+  }
+
+  Future<void> deleteDownloadsFolder() async {
+    final Directory appDir = await getApplicationDocumentsDirectory();
+    final Directory downloadsDir = Directory(p.join(appDir.path, 'downloads'));
+
+    if (await downloadsDir.exists()) {
+      await downloadsDir.delete(recursive: true);
+      print('✅ downloads folder deleted successfully');
+    } else {
+      print('ℹ️ downloads folder does not exist');
     }
   }
 }

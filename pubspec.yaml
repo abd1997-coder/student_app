@@ -41,6 +41,10 @@ dependencies:
   sleek_circular_slider: ^2.0.1
   connectivity_plus: ^5.0.2
   shimmer: ^3.0.0
+  video_player: ^2.10.0
+  encrypt: ^5.0.1
+  crypto: ^3.0.3
+  
   y_player:
     path: ./y_player
   youtube_muxer_2025:

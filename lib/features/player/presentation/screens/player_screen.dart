@@ -1,11 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:student_app/core/common/models/video_model.dart';
 import 'package:student_app/core/common/widget/bottomSheets/download_sheet_content.dart';
 import 'package:student_app/core/common/widget/bottomSheets/question_sheet_content.dart';
 import 'package:student_app/core/core.dart';
 import 'package:student_app/features/player/presentation/widgets/player_widget.dart';
-import 'package:y_player/y_player.dart';
 import 'package:youtube_muxer_2025/youtube_muxer_2025.dart';
+import 'package:video_player/video_player.dart';
+import 'package:auto_route/auto_route.dart';
 
 @RoutePage()
 class PlayerScreen extends StatefulWidget {
@@ -16,6 +19,7 @@ class PlayerScreen extends StatefulWidget {
   });
   final VideoModel videoModel;
   final String teacherName;
+
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
 }
@@ -28,13 +32,39 @@ class _PlayerScreenState extends State<PlayerScreen> {
     'الصور',
     'الملفات',
   ];
+
   int selectedCategory = 0;
   List<VideoQuality> _availableQualities = [];
+  VideoPlayerController? _localVideoController;
+  bool _isDecodedVideoReady = false;
 
   void _handleQualitiesReady(List<VideoQuality> qualities) {
     setState(() {
       _availableQualities = qualities;
     });
+  }
+
+  @override
+  void dispose() {
+    _localVideoController?.dispose();
+    super.dispose();
+  }
+
+  Future<void> playDecodedVideo(String videoTitle) async {
+    try {
+      final File decodedFile = await VideoEncoder().decryptFile(
+        videoTitle,
+        '1234567890',
+      );
+      _localVideoController = VideoPlayerController.file(decodedFile);
+      await _localVideoController!.initialize();
+      _localVideoController!.play();
+      setState(() {
+        _isDecodedVideoReady = true;
+      });
+    } catch (e) {
+      print('Error decoding or playing video: $e');
+    }
   }
 
   @override
@@ -47,7 +77,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
             expandedHeight: 250,
             pinned: true,
             elevation: 0,
-
             leading: const SizedBox(),
             actions: <Widget>[
               IconButton(
@@ -67,10 +96,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     : const Center(child: Text("هناك خطأ 357")),
           ),
 
-          // Header content below video
+          // Header below video
           SliverToBoxAdapter(
             child: Container(
-              color: Palette.black, // الخلفية العامة خلف المحتوى الأبيض
+              color: Palette.black,
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -86,7 +115,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    // Action icons row
                     Row(
                       children: <Widget>[
                         Text(
@@ -117,6 +145,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                   downloadSheet(
                                     context: context,
                                     videoUrl: widget.videoModel.videoUrl!,
+                                    videoTitle: widget.videoModel.title ?? "",
                                     onQualitySelected: (quality) {
                                       print(quality);
                                     },
@@ -129,8 +158,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
                         ),
                       ],
                     ),
-
-                    // Title & Teacher Info
                     const SizedBox(height: 4),
                     Row(
                       children: <Widget>[
@@ -142,7 +169,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    // Description
                     const Text(
                       'سيتم في هذا الفيديو شرح نظرة عامة عن الوحدة وتعريف الأعداد العقدية والعمليات عليها بصورة واضحة وبسيطة',
                       style: TextStyle(color: Palette.darkGray, fontSize: 15),
@@ -154,53 +180,28 @@ class _PlayerScreenState extends State<PlayerScreen> {
             ),
           ),
 
-          // Categories horizontal list
-          // SliverToBoxAdapter(
-          //   child: Container(
-          //     margin: const EdgeInsets.symmetric(horizontal: 8),
-          //     decoration: const BoxDecoration(
-          //       color: Palette.gray,
-          //       borderRadius: BorderRadius.only(
-          //         topLeft: Radius.circular(12),
-          //         topRight: Radius.circular(12),
-          //       ),
-          //     ),
-          //     height: 60,
-          //     child: ListView.separated(
-          //       padding: const EdgeInsets.symmetric(horizontal: 16),
-          //       scrollDirection: Axis.horizontal,
-          //       itemCount: categories.length,
-          //       separatorBuilder: (_, __) => const SizedBox(width: 8),
-          //       itemBuilder: (BuildContext context, int index) {
-          //         final bool selected = index == selectedCategory;
-          //         return ChoiceChip(
-          //           label: Text(
-          //             categories[index],
-          //             style: const TextStyle(fontWeight: FontWeight.bold),
-          //           ),
-
-          //           selected: selected,
-          //           onSelected: (_) {
-          //             setState(() => selectedCategory = index);
-          //           },
-          //           shape: RoundedRectangleBorder(
-          //             borderRadius: BorderRadius.circular(20),
-          //           ),
-          //           selectedColor: Palette.primary,
-          //           backgroundColor: Colors.grey.shade200,
-          //           showCheckmark: false,
-          //           labelStyle: TextStyle(
-          //             color: selected ? Colors.white : Colors.grey[800],
-          //           ),
-          //         );
-          //       },
-          //     ),
-          //   ),
-          // ),
-
-          // Progress bar or other content
-          // const SliverToBoxAdapter(child: AutomationWidget()),
-          // const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          // Decoded video section
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                ElevatedButton(
+                  onPressed:
+                      () => playDecodedVideo(widget.videoModel.title ?? ""),
+                  child: const Text("test"),
+                ),
+                if (_isDecodedVideoReady && _localVideoController != null)
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: AspectRatio(
+                      aspectRatio: _localVideoController!.value.aspectRatio,
+                      child: VideoPlayer(_localVideoController! ,),
+                    ),
+                  )
+                else
+                  const SizedBox.shrink(),
+              ],
+            ),
+          ),
         ],
       ),
     );
