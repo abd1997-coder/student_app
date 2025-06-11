@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:student_app/core/common/common.dart';
 import 'package:student_app/core/managers/theme/palette.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class SubjectWidget extends StatelessWidget {
   const SubjectWidget({
@@ -16,7 +17,7 @@ class SubjectWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 120,
-      padding: EdgeInsets.symmetric(vertical: 4 ,horizontal: 2),
+      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 2),
       child: Stack(
         alignment: AlignmentDirectional.topCenter,
         children: [
@@ -70,7 +71,10 @@ class SubjectWidget extends StatelessWidget {
               ),
             ),
           ),
-          CircleAvatar(radius: 28, backgroundImage: NetworkImage(image)),
+          CircleAvatar(
+            radius: 28,
+            backgroundImage: CachedNetworkImageProvider(image),
+          ),
         ],
       ),
     );

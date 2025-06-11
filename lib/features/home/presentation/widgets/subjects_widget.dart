@@ -11,7 +11,7 @@ class SubjectsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 120,
-      margin: const EdgeInsets.symmetric(horizontal: 12 ,),
+      margin: const EdgeInsets.symmetric(horizontal: 12),
       child: ListView.separated(
         padding: EdgeInsets.zero,
         scrollDirection: Axis.horizontal,
@@ -26,7 +26,7 @@ class SubjectsWidget extends StatelessWidget {
             },
             child: SubjectWidget(
               title: list[index].name ?? '-',
-              videosCount: list[index].units?.length ?? 0,
+              videosCount: list[index].videosCount ?? 0,
               image: list[index].image ?? '-',
             ),
           );

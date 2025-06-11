@@ -21,7 +21,7 @@ class _TeachersWidgetState extends State<TeachersWidget> {
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (BuildContext context, int idx) {
           return CustomPhotoWidget(
-            name: widget.teachers?[idx].user?.fullName,
+            name: widget.teachers?[idx].fullName,
             image: widget.teachers?[idx].image,
           );
         },

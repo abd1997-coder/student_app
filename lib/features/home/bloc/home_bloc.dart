@@ -20,7 +20,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       event as _$GetHomeImpl;
       emit(const HomeState.loadingHome());
-      HomeModel homeModel = await _homeRepository.getHome();
+      HomeModel homeModel = await _homeRepository.getHomeData();
       emit(HomeState.successHome(homeResults: homeModel.results));
     } catch (e) {
       emit(const HomeState.failedHome());

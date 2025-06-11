@@ -44,6 +44,8 @@ dependencies:
   video_player: ^2.10.0
   encrypt: ^5.0.1
   crypto: ^3.0.3
+  sqflite: ^2.3.0
+  path: ^1.8.3
   
   y_player:
     path: ./y_player

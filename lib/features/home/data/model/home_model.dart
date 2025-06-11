@@ -34,6 +34,7 @@ class MaterialData {
   final String? price;
   final bool? isAvailable;
   final List<dynamic>? units;
+  final int? videosCount;
 
   MaterialData({
     this.id,
@@ -43,6 +44,7 @@ class MaterialData {
     this.price,
     this.isAvailable,
     this.units,
+    this.videosCount,
   });
 
   factory MaterialData.fromJson(Map<String, dynamic> json) => MaterialData(
@@ -59,6 +61,7 @@ class MaterialData {
         json["units"] == null
             ? []
             : List<dynamic>.from(json["units"]!.map((dynamic x) => x)),
+    videosCount: json["video_count"],
   );
 }
 
@@ -69,7 +72,7 @@ class TeacherData {
   final List<MaterialData>? materials;
   final String? image;
   final String? description;
-
+  final String? fullName;
   TeacherData({
     this.id,
     this.user,
@@ -77,6 +80,7 @@ class TeacherData {
     this.materials,
     this.image,
     this.description,
+    this.fullName,
   });
 
   factory TeacherData.fromJson(Map<String, dynamic> json) => TeacherData(
@@ -88,5 +92,6 @@ class TeacherData {
     ),
     image: json["image"],
     description: json["description"],
+    fullName: UserData.fromJson(json["user"]).fullName,
   );
 }
