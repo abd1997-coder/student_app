@@ -333,6 +333,7 @@ class _MaterialDetailViewState extends State<MaterialDetailView> {
                                           materialResults.units ?? [];
 
                                       return PartWidget(
+                                        myLeason: false,
                                         unit: materialResults.units![index],
                                         pruchesBloc: pruchesBloc,
                                         onTogglePart: () {

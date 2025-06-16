@@ -1,8 +1,12 @@
 import 'package:get_it/get_it.dart';
+import 'package:student_app/core/general/Materials/bloc/materials_bloc.dart';
+import 'package:student_app/core/general/Materials/data/materials_repository.dart';
 import 'package:student_app/core/pruches/bloc/pruches_bloc.dart';
 import 'package:student_app/core/pruches/data/pruches_repository.dart';
 import 'package:student_app/features/home/bloc/home_bloc.dart';
 import 'package:student_app/features/home/data/home_repository.dart';
+import 'package:student_app/features/leasons/bloc/leasons_bloc.dart';
+import 'package:student_app/features/leasons/data/leasons_repository.dart';
 import 'package:student_app/features/materials/bloc/material_bloc.dart';
 import 'package:student_app/features/materials/data/materials_repository.dart';
 import 'package:student_app/features/profile/bloc/profile_bloc.dart';
@@ -50,6 +54,8 @@ void repositories() {
   getIt.registerLazySingleton<ProfileRepository>(
     () => ProfileRepository(getIt()),
   );
+  getIt.registerLazySingleton<LeasonsRepository>(() => LeasonsRepository());
+  getIt.registerLazySingleton<MaterialsRepository>(() => MaterialsRepository());
 }
 
 void cubits() {
@@ -59,4 +65,6 @@ void cubits() {
   getIt.registerFactory(() => MaterialDetailBloc(getIt()));
   getIt.registerFactory(() => PruchesBloc(getIt()));
   getIt.registerFactory(() => ProfileBloc(getIt()));
+  getIt.registerFactory(() => LeasonsBloc());
+  getIt.registerFactory(() => MaterialsBloc(getIt()));
 }

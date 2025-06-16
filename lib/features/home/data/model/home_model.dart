@@ -8,6 +8,10 @@ class HomeModel {
 
   factory HomeModel.fromJson(Map<String, dynamic> json) =>
       HomeModel(results: HomeResults.fromJson(json["results"]));
+
+  Map<String, dynamic> toMap() => {
+        'results': results.toMap(),
+      };
 }
 
 class HomeResults {
@@ -18,12 +22,17 @@ class HomeResults {
 
   factory HomeResults.fromJson(Map<String, dynamic> json) => HomeResults(
     materials: List<MaterialData>.from(
-      json["materials"]!.map((dynamic x) => MaterialData.fromJson(x)),
+      json["materials"]?.map((dynamic x) => MaterialData.fromJson(x)) ?? [],
     ),
     teachers: List<TeacherData>.from(
-      json["teachers"]!.map((dynamic x) => TeacherData.fromJson(x)),
+      json["teachers"]?.map((dynamic x) => TeacherData.fromJson(x)) ?? [],
     ),
   );
+
+  Map<String, dynamic> toMap() => {
+        'materials': materials?.map((x) => x.toMap()).toList(),
+        'teachers': teachers?.map((x) => x.toMap()).toList(),
+      };
 }
 
 class MaterialData {
@@ -63,6 +72,15 @@ class MaterialData {
             : List<dynamic>.from(json["units"]!.map((dynamic x) => x)),
     videosCount: json["video_count"],
   );
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'image': image,
+      'price': price,
+    };
+  }
 }
 
 class TeacherData {
@@ -86,12 +104,24 @@ class TeacherData {
   factory TeacherData.fromJson(Map<String, dynamic> json) => TeacherData(
     id: json["id"],
     user: json["user"] == null ? null : UserData.fromJson(json["user"]),
-    specialty: SpecialtyResult.fromJson(json["speciality"]),
+    specialty: json["speciality"] == null
+        ? null
+        : SpecialtyResult.fromJson(json["speciality"]),
     materials: List<MaterialData>.from(
-      json["materials"]!.map((dynamic x) => MaterialData.fromJson(x)),
+      json["materials"]?.map((dynamic x) => MaterialData.fromJson(x)) ?? [],
     ),
     image: json["image"],
     description: json["description"],
     fullName: UserData.fromJson(json["user"]).fullName,
   );
+
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'user': user?.toMap(),
+        'specialty': specialty?.toMap(),
+        'materials': materials?.map((x) => x.toMap()).toList(),
+        'image': image,
+        'description': description,
+        'full_name': fullName,
+      };
 }

@@ -220,6 +220,7 @@ class _PartsScreenState extends State<PartsScreen> {
           itemCount: parts.length,
           itemBuilder: (BuildContext context, int index) {
             return PartWidget(
+              myLeason: false,
               unit:null,
               pruchesBloc: null,
               onTogglePart:

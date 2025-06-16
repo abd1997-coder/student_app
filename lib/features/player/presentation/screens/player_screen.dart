@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:student_app/core/common/models/video_model.dart';
 import 'package:student_app/core/common/widget/bottomSheets/download_sheet_content.dart';
@@ -16,10 +14,11 @@ class PlayerScreen extends StatefulWidget {
     super.key,
     required this.videoModel,
     required this.teacherName,
+    required this.myLeason,
   });
   final VideoModel videoModel;
   final String teacherName;
-
+  final bool myLeason;
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
 }
@@ -48,23 +47,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
   void dispose() {
     _localVideoController?.dispose();
     super.dispose();
-  }
-
-  Future<void> playDecodedVideo(String videoTitle) async {
-    try {
-      final File decodedFile = await VideoEncoder().decryptFile(
-        videoTitle,
-        '1234567890',
-      );
-      _localVideoController = VideoPlayerController.file(decodedFile);
-      await _localVideoController!.initialize();
-      _localVideoController!.play();
-      setState(() {
-        _isDecodedVideoReady = true;
-      });
-    } catch (e) {
-      print('Error decoding or playing video: $e');
-    }
   }
 
   @override
@@ -145,7 +127,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                   downloadSheet(
                                     context: context,
                                     videoUrl: widget.videoModel.videoUrl!,
-                                    videoTitle: widget.videoModel.title ?? "",
+                                    videoId: widget.videoModel.id ?? "",
                                     onQualitySelected: (quality) {
                                       print(quality);
                                     },
@@ -184,17 +166,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
           SliverToBoxAdapter(
             child: Column(
               children: [
-                ElevatedButton(
-                  onPressed:
-                      () => playDecodedVideo(widget.videoModel.title ?? ""),
-                  child: const Text("test"),
-                ),
                 if (_isDecodedVideoReady && _localVideoController != null)
                   Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: AspectRatio(
                       aspectRatio: _localVideoController!.value.aspectRatio,
-                      child: VideoPlayer(_localVideoController! ,),
+                      child: VideoPlayer(_localVideoController!),
                     ),
                   )
                 else

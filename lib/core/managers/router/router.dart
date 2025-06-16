@@ -93,6 +93,10 @@ class AppRouter extends RootStackRouter {
       transitionsBuilder: TransitionsBuilders.slideLeftWithFade,
       page: LeaderBoardRoute.page,
     ),
+    CustomRoute(
+      transitionsBuilder: TransitionsBuilders.slideLeftWithFade,
+      page: LocalPlayerRoute.page,
+    ),
     CustomRoute<BaseRoute>(
       page: BaseRoute.page,
       children: <AutoRoute>[

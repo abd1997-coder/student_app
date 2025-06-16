@@ -12,6 +12,11 @@ class SpecialtyModel {
       json["results"]!.map((dynamic x) => SpecialtyResult.fromJson(x)),
     ),
   );
+
+  Map<String, dynamic> toJson() => {
+    "pagination": pagination.toJson(),
+    "results": results.map((x) => x.toMap()).toList(),
+  };
 }
 
 class SpecialtyResult {
@@ -37,4 +42,12 @@ class SpecialtyResult {
         image: json["image"],
         name: json["name"],
       );
+
+  Map<String, dynamic> toMap() => {
+    "id": id,
+    "price": price,
+    "is_available": isAvailable,
+    "image": image,
+    "name": name,
+  };
 }

@@ -30,4 +30,17 @@ class VideoModel {
       price: json['price'],
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'video_url': videoUrl,
+      'youtube_url': youtubeUrl,
+      'duration': duration,
+      'unit': unit,
+      'can_view': canView,
+      'price': price,
+    };
+  }
 }

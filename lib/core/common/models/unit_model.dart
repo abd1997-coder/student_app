@@ -58,4 +58,19 @@ class Unit {
       });
     }
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'speciality': speciality?.toMap(),
+      'image': image,
+      'price': price,
+      'is_available': isAvailable,
+      'units': units?.map((unit) => unit.toMap()).toList(),
+      'video_count': videoCount,
+      'teachers': teachers?.map((teacher) => teacher.toJson()).toList(),
+      'videos': videos?.map((video) => video.toMap()).toList(),
+    };
+  }
 }

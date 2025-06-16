@@ -15,15 +15,23 @@ class TeacherModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    if (this.user != null) {
-      data['user'] = this.user!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    if (user != null) {
+      data['user'] = user!.toJson();
     }
-    data['image'] = this.image;
-    data['description'] = this.description;
+    data['image'] = image;
+    data['description'] = description;
     return data;
   }
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'user': user?.toMap(),
+      'image': image,
+      'description': description,
+    };
+  } 
 }
 
 
@@ -45,12 +53,21 @@ class TeacherInfro {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['phone_number'] = this.phoneNumber;
-    data['email'] = this.email;
-    data['full_name'] = this.fullName;
-    data['type'] = this.type;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['phone_number'] = phoneNumber;
+    data['email'] = email;
+    data['full_name'] = fullName;
+    data['type'] = type;
     return data;
+  }
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'phone_number': phoneNumber,
+      'email': email,
+      'full_name': fullName,
+      'type': type,
+    };
   }
 }

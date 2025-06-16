@@ -1,17 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:student_app/core/common/function/decrypt_params.dart';
 import 'package:student_app/core/core.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:youtube_muxer_2025/youtube_muxer_2025.dart';
 import 'package:youtube_muxer_2025/youtube_muxer_2025.dart' as models;
-import 'dart:convert';
 import 'dart:io';
-import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:path_provider/path_provider.dart';
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 
@@ -19,7 +15,7 @@ void downloadSheet({
   required BuildContext context,
   required String videoUrl,
   required Function(String) onQualitySelected,
-  required String videoTitle,
+  required String videoId,
 }) {
   showModalBottomSheet(
     context: context,
@@ -31,7 +27,7 @@ void downloadSheet({
         (_) => DownloadSheetContent(
           videoUrl: videoUrl,
           onQualitySelected: onQualitySelected,
-          videoTitle: videoTitle,
+          videoTitle: videoId,
         ),
   );
 }
@@ -215,7 +211,7 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
     );
   }
 
-  Future<void> startDownload(VideoQuality quality, String videoTitle) async {
+  Future<void> startDownload(VideoQuality quality, String videoId) async {
     final Directory appDir = await getApplicationDocumentsDirectory();
     final Directory downloadsDir = Directory('${appDir.path}/downloads');
     final Directory encryptedDir = Directory('${appDir.path}/encrypted');
@@ -246,7 +242,7 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
           fps: 30,
         ),
         widget.videoUrl,
-        videoTitle,
+        videoId,
       );
 
       stream.listen(
@@ -260,9 +256,9 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
               encryptedDir.createSync(recursive: true);
             }
             await VideoEncoder().encryptFile(
-              File("${appDir.path}/downloads/${videoTitle}_mearged.mp4"),
+              File("${appDir.path}/downloads/${videoId}_mearged.mp4"),
               '1234567890',
-              videoTitle,
+              videoId,
             );
             print('encryptedPath: encrypted done ');
             const AndroidNotificationDetails androidDetails =
@@ -328,75 +324,52 @@ class VideoEncoder {
   Future<String> encryptFile(
     File inputFile,
     String password,
-    String videoTitle,
+    String videoId,
   ) async {
-    // Generate key
-    final encrypt.Key key = encrypt.Key.fromUtf8(
+    final key = encrypt.Key.fromUtf8(
       sha256.convert(utf8.encode(password)).toString().substring(0, 32),
     );
-
-    // Generate a random IV
-    final encrypt.IV iv = encrypt.IV.fromSecureRandom(16);
-
-    final encrypt.Encrypter encrypter = encrypt.Encrypter(
-      encrypt.AES(key, mode: encrypt.AESMode.gcm),
+    final iv = encrypt.IV.fromSecureRandom(16);
+    final encrypter = encrypt.Encrypter(
+      encrypt.AES(key, mode: encrypt.AESMode.cbc),
     );
 
-    final Uint8List bytes = await inputFile.readAsBytes();
-    final encrypt.Encrypted encrypted = encrypter.encryptBytes(bytes, iv: iv);
-
-    // Combine IV + encrypted bytes
-    final List<int> combined = iv.bytes + encrypted.bytes;
-
-    // Save to file
     final Directory dir = await getApplicationDocumentsDirectory();
     final Directory encryptedDir = Directory('${dir.path}/encrypted');
     if (!await encryptedDir.exists()) {
       await encryptedDir.create(recursive: true);
     }
+    final String encryptedPath = '${encryptedDir.path}/$videoId.enc';
+    final outFile = File(encryptedPath).openWrite();
 
-    final String encryptedPath = '${encryptedDir.path}/$videoTitle.enc';
-    final File encryptedFile = File(encryptedPath);
-    await encryptedFile.writeAsBytes(combined);
+    // Write IV at the start
+    outFile.add(iv.bytes);
 
-    // Optionally delete the original file
+    final input = inputFile.openRead();
+    await for (final chunk in input) {
+      final encryptedChunk = encrypter.encryptBytes(chunk, iv: iv);
+      outFile.add(encryptedChunk.bytes);
+    }
+
+    await outFile.close();
     await deleteDownloadsFolder();
-    print('✅ encryptedPath: $encryptedPath');
+    print('✅ Encrypted to: $encryptedPath');
     return encryptedPath;
   }
 
   Future<File> decryptFile(String videoTitle, String password) async {
-    final Directory appDir = await getApplicationDocumentsDirectory();
-    final File encryptedFile = File('${appDir.path}/encrypted/$videoTitle.enc');
-    final Uint8List encryptedBytes = await encryptedFile.readAsBytes();
+    final appDir = await getApplicationDocumentsDirectory();
 
-    // Split IV + cipherText
-    final encrypt.IV iv = encrypt.IV(encryptedBytes.sublist(0, 16));
-    final Uint8List cipherText = encryptedBytes.sublist(16);
-
-    final encrypt.Key key = encrypt.Key.fromUtf8(
-      sha256.convert(utf8.encode(password)).toString().substring(0, 32),
+    final String decryptedPath = await compute(
+      decryptFileIsolate,
+      DecryptParams(
+        videoTitle: videoTitle,
+        password: password,
+        appDirPath: appDir.path,
+      ),
     );
-    final encrypt.Encrypter encrypter = encrypt.Encrypter(
-      encrypt.AES(key, mode: encrypt.AESMode.gcm),
-    );
-
-    final List<int> decryptedBytes = encrypter.decryptBytes(
-      encrypt.Encrypted(cipherText),
-      iv: iv,
-    );
-
-    final String decryptedPath = '${appDir.path}/decrypted/$videoTitle.mp4';
-    final File decryptedFile = File(decryptedPath);
-
-    final Directory decryptedDir = Directory('${appDir.path}/decrypted');
-    if (!await decryptedDir.exists()) {
-      await decryptedDir.create(recursive: true);
-    }
-
-    await decryptedFile.writeAsBytes(decryptedBytes);
     print('✅ decryptedPath: $decryptedPath');
-    return decryptedFile;
+    return File(decryptedPath);
   }
 
   Future<void> deleteDownloadsFolder() async {

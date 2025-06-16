@@ -8,4 +8,6 @@ class PrefKeys {
   static const String fcmTokenSent = 'fcm_token_sent';
   static const String currency = 'currency';
   static const String currencyId = '';
+  static const String homeData = 'home_data';
+  static const String materialData = 'material_data';
 }

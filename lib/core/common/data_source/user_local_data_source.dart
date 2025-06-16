@@ -3,7 +3,7 @@ import '../../core.dart';
 
 class UserLocalDataSource {
   Future<void> storeUser(UserData userData) async {
-    await Managers.prefManager.set(PrefKeys.user, userData.toJson());
+    await Managers.prefManager.set(PrefKeys.user, userData.toMap());
     // Logger().i('Storing User ${userData.toJson()}');
   }
 

@@ -46,7 +46,8 @@ dependencies:
   crypto: ^3.0.3
   sqflite: ^2.3.0
   path: ^1.8.3
-  
+  file_encrypter: ^2.0.1
+
   y_player:
     path: ./y_player
   youtube_muxer_2025:

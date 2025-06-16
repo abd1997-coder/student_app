@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:root_checker_plus/root_checker_plus.dart';
+import 'package:student_app/core/database/database_helper.dart';
 import 'package:y_player/y_player.dart';
 
 import 'app.dart' show App;
@@ -12,17 +13,17 @@ import 'generated/codegen_loader.g.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   YPlayerInitializer.ensureInitialized();
-
+  await DatabaseHelper.instance.initDatabase();
   Bloc.observer = MyBlocObserver();
 
   // Check if the device is rooted/jailbroken
   bool isDeviceRooted = false;
-  // if (Platform.isAndroid) {
-  //   isDeviceRooted = await RootCheckerPlus.isRootChecker() ?? false;
-  // }
-  // if (Platform.isIOS) {
-  //   isDeviceRooted = await RootCheckerPlus.isJailbreak() ?? false;
-  // }
+  if (Platform.isAndroid) {
+    isDeviceRooted = await RootCheckerPlus.isRootChecker() ?? false;
+  }
+  if (Platform.isIOS) {
+    isDeviceRooted = await RootCheckerPlus.isJailbreak() ?? false;
+  }
   if (isDeviceRooted) {
     // Display a warning screen and do not continue with the normal app flow.
     runApp(

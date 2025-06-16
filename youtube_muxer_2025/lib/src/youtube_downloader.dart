@@ -96,7 +96,7 @@ class YoutubeDownloader {
   Stream<DownloadProgress> downloadVideo(
     models.VideoQuality quality,
     String videoUrl,
-    String videoTitle,
+    String videoId,
   ) async* {
     try {
       final video = await _yt.videos.get(videoUrl);
@@ -113,10 +113,10 @@ class YoutubeDownloader {
               a.bitrate.bitsPerSecond > b.bitrate.bitsPerSecond ? a : b);
 
       final dir = await getApplicationDocumentsDirectory();
-      final tempVideoPath = '${dir.path}/downloads/${videoTitle}_video.mp4';
-      final tempAudioPath = '${dir.path}/downloads/${videoTitle}_audio.m4a';
+      final tempVideoPath = '${dir.path}/downloads/${videoId}_video.mp4';
+      final tempAudioPath = '${dir.path}/downloads/${videoId}_audio.m4a';
       // final outputPath = '${dir.path}/${_sanitize(video.title)}.mp4';
-      final outputPath = '${dir.path}/downloads/${videoTitle}_mearged.mp4';
+      final outputPath = '${dir.path}/downloads/${videoId}_mearged.mp4';
 
       // Video download with progress
       final videoFile = File(tempVideoPath).openWrite();

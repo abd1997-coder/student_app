@@ -13,6 +13,16 @@ class Speciality {
     required this.name,
   });
 
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'price': price,
+      'is_available': isAvailable,
+      'image': image,
+      'name': name,
+    };
+  }
+  
   factory Speciality.fromJson(Map<String, dynamic> json) {
     return Speciality(
       id: json['id'],

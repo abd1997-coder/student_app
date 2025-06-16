@@ -99,7 +99,10 @@ class Student {
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(
       parentPhoneNumber: json['parent_phone_number'],
-      speciality:  json['speciality'] != null ? Speciality.fromJson(json['speciality']) : null,
+      speciality:
+          json['speciality'] != null
+              ? Speciality.fromJson(json['speciality'])
+              : null,
       grade: json['grade'],
       balance: json['balance'],
     );

@@ -13,6 +13,10 @@ class MaterialResponseModel {
             ? MaterialResults.fromJson(json['results'])
             : null;
   }
+
+  Map<String, dynamic> toMap() => {
+        'results': results?.toMap(),
+      };
 }
 
 class MaterialResults {
@@ -53,4 +57,16 @@ class MaterialResults {
       ),
     );
   }
+
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'name': name,
+        'speciality': speciality?.toMap(),
+        'image': image,
+        'price': price,
+        'is_available': isAvailable,
+        'units': units?.map((x) => x.toMap()).toList(),
+        'video_count': videoCount,
+        'teachers': teachers?.map((x) => x.toMap()).toList(),
+      };
 }

@@ -35,4 +35,16 @@ class PrefData {
 
   static String? get currencyIdPhone =>
       Managers.prefManager.get<String>(PrefKeys.currencyId);
+
+  static set homeData(String value) =>
+      Managers.prefManager.set(PrefKeys.homeData, value);
+
+  static String get homeData =>
+      Managers.prefManager.get<String>(PrefKeys.homeData) ?? '';
+
+  static setMaterialData(String id, String value) =>
+      Managers.prefManager.set("${PrefKeys.materialData}$id", value);
+
+  static String? getMaterialData(String id) =>
+      Managers.prefManager.get<String>("${PrefKeys.materialData}$id");
 }

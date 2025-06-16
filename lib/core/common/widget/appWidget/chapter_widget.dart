@@ -16,12 +16,14 @@ class ChapterWidget extends StatelessWidget {
   final VoidCallback onToggleChapter;
   final ValueChanged<Unit> onToggleLesson;
   final PruchesBloc? pruchesBloc;
+  final bool myLeason;
   const ChapterWidget({
     Key? key,
     required this.unit,
     required this.onToggleChapter,
     required this.onToggleLesson,
     this.pruchesBloc,
+    this.myLeason = false,
   }) : super(key: key);
 
   @override
@@ -96,32 +98,62 @@ class ChapterWidget extends StatelessWidget {
                   (unit?.videos ?? [])
                       .map(
                         (VideoModel video) => InkWell(
-                          onTap: () {
-                            if (video.canView ?? false) {
-                              context.router.push(
-                                PlayerRoute(
-                                  videoModel: video,
-                                  teacherName:
-                                      unit?.teachers?.first.user?.fullName ??
-                                      "",
-                                ),
-                              );
-                            } else {
-                              showMaterialPurchaseSheet(
-                                context: context,
-                                balance: 999,
-                                objectNmae: "وحدة",
-                                cost: video.price ?? "0",
-                                onClickBuy: () {
-                                  context.router.maybePop();
-                                  pruchesBloc!.add(
-                                    PruchesEvent.buyMaterial(
-                                      video.id ?? '-1',
-                                      PruchesType.video,
-                                    ),
+                          onTap: () async {
+                            if (myLeason) {
+                              bool exists =
+                                  await GlobalFunctions.doesVideoExistLocally(
+                                    video.id ?? '',
                                   );
-                                },
-                              );
+                              if (exists) {
+                                print("exists");
+                                context.router.push(
+                                  LocalPlayerRoute(
+                                    myLeason: myLeason,
+                                    videoModel: video,
+                                    teacherName:
+                                        unit
+                                            ?.teachers
+                                            ?.first
+                                            .user
+                                            ?.fullName ??
+                                        "",
+                                  ),
+                                );
+                              } else {
+                                showSnackBar(
+                                  context: context,
+                                  message: "هذا المقطع غير محمل ",
+                                  isError: true,
+                                );
+                              }
+                            } else {
+                              if (video.canView ?? false) {
+                                context.router.push(
+                                  PlayerRoute(
+                                    myLeason: myLeason,
+                                    videoModel: video,
+                                    teacherName:
+                                        unit?.teachers?.first.user?.fullName ??
+                                        "",
+                                  ),
+                                );
+                              } else {
+                                showMaterialPurchaseSheet(
+                                  context: context,
+                                  balance: 999,
+                                  objectNmae: "وحدة",
+                                  cost: video.price ?? "0",
+                                  onClickBuy: () {
+                                    context.router.maybePop();
+                                    pruchesBloc!.add(
+                                      PruchesEvent.buyMaterial(
+                                        video.id ?? '-1',
+                                        PruchesType.video,
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
                             }
                           },
                           child: Container(
@@ -136,7 +168,6 @@ class ChapterWidget extends StatelessWidget {
                                   margin: EdgeInsets.symmetric(horizontal: 20),
                                 ),
                                 SessionWidget(videoModel: video),
-                                
                               ],
                             ),
                           ),

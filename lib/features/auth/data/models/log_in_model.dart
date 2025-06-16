@@ -23,7 +23,7 @@ class AuthModel {
   Map<String, dynamic> toJson() => <String, dynamic>{
     "status_code": statusCode,
     "message": message,
-    "results": data.toJson(),
+    "results": data.toMap(),
   };
 }
 
@@ -128,7 +128,7 @@ class UserData {
     resetPasswordCode: json["reset_password_code"],
   );
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
+  Map<String, dynamic> toMap() => <String, dynamic>{
     "id": id,
     "email": email,
     "access": access,
