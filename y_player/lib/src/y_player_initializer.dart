@@ -37,8 +37,6 @@ class YPlayerInitializer {
 
       // Initialize the MediaKit library
       // This sets up the necessary components for media playback
-      MediaKit.ensureInitialized();
-
       // Set the flag to true to indicate that initialization has been completed
       _isInitialized = true;
     }

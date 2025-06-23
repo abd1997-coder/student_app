@@ -40,7 +40,7 @@ class GlobalFunctions {
 
   static Future<bool> doesVideoExistLocally(String videoId) async {
     final dir = await getApplicationDocumentsDirectory();
-    final path = '${dir.path}/encrypted/$videoId.enc';
+    final path = '${dir.path}/protected/$videoId.lockedvid';
     return File(path).exists();
   }
 }

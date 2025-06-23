@@ -1,15 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:student_app/core/common/function/decrypt_params.dart';
 import 'package:student_app/core/core.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:youtube_muxer_2025/youtube_muxer_2025.dart';
 import 'package:youtube_muxer_2025/youtube_muxer_2025.dart' as models;
 import 'dart:io';
-import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:crypto/crypto.dart';
-import 'package:path/path.dart' as p;
 
 void downloadSheet({
   required BuildContext context,
@@ -71,24 +67,29 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
 
   Future<void> _loadQualities() async {
     try {
+      if (!mounted) return; // ✅ تحقق قبل setState
       setState(() => _isLoading = true);
+
       final List<VideoQuality> qualities = await _downloader.getQualities(
         widget.videoUrl,
       );
+
+      if (!mounted) return; // ✅ تحقق مرة ثانية بعد await
       setState(() {
         _qualities = qualities;
         _isLoading = false;
       });
     } catch (e) {
       print('Error loading qualities: $e');
+
+      if (!mounted) return; // ✅ تحقق قبل setState
       setState(() => _isLoading = false);
-      if (mounted) {
-        showSnackBar(
-          context: context,
-          message: 'فشل في تحميل جودات الفيديو',
-          isError: true,
-        );
-      }
+
+      showSnackBar(
+        context: context,
+        message: 'فشل في تحميل جودات الفيديو',
+        isError: true,
+      );
     }
   }
 
@@ -165,10 +166,10 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
                               ),
                             ),
                           ),
-                          Text(
-                            quality.fps.toString(),
-                            style: const TextStyle(fontSize: 16),
-                          ),
+                          // Text(
+                          //   quality.fps.toString(),
+                          //   style: const TextStyle(fontSize: 16),
+                          // ),
                           Radio<VideoQuality>(
                             value: quality,
                             groupValue: selectedValue,
@@ -214,7 +215,8 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
   Future<void> startDownload(VideoQuality quality, String videoId) async {
     final Directory appDir = await getApplicationDocumentsDirectory();
     final Directory downloadsDir = Directory('${appDir.path}/downloads');
-    final Directory encryptedDir = Directory('${appDir.path}/encrypted');
+    final filePath = '${downloadsDir.path}/${videoId}_mearged.mp4';
+    final inputFile = File(filePath);
 
     try {
       if (widget.videoUrl.isEmpty) {
@@ -252,15 +254,16 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
         },
         onDone: () async {
           try {
-            if (!encryptedDir.existsSync()) {
-              encryptedDir.createSync(recursive: true);
+            if (!await inputFile.exists()) {
+              print('File not found: $filePath');
+            } else {
+              final protectedPath = await VideoProtector.saveObfuscatedVideo(
+                inputFile,
+                videoId,
+              );
+              print('Protected video saved at: $protectedPath');
             }
-            await VideoEncoder().encryptFile(
-              File("${appDir.path}/downloads/${videoId}_mearged.mp4"),
-              '1234567890',
-              videoId,
-            );
-            print('encryptedPath: encrypted done ');
+
             const AndroidNotificationDetails androidDetails =
                 AndroidNotificationDetails(
                   'download_channel',
@@ -320,67 +323,93 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
   }
 }
 
-class VideoEncoder {
-  Future<String> encryptFile(
+class VideoProtector {
+  static const int headerSize = 512;
+
+  /// Save the downloaded video with a fake header and a fake extension,
+  /// then delete the original file.
+  static Future<String> saveObfuscatedVideo(
     File inputFile,
-    String password,
     String videoId,
   ) async {
-    final key = encrypt.Key.fromUtf8(
-      sha256.convert(utf8.encode(password)).toString().substring(0, 32),
-    );
-    final iv = encrypt.IV.fromSecureRandom(16);
-    final encrypter = encrypt.Encrypter(
-      encrypt.AES(key, mode: encrypt.AESMode.cbc),
-    );
-
-    final Directory dir = await getApplicationDocumentsDirectory();
-    final Directory encryptedDir = Directory('${dir.path}/encrypted');
-    if (!await encryptedDir.exists()) {
-      await encryptedDir.create(recursive: true);
-    }
-    final String encryptedPath = '${encryptedDir.path}/$videoId.enc';
-    final outFile = File(encryptedPath).openWrite();
-
-    // Write IV at the start
-    outFile.add(iv.bytes);
-
-    final input = inputFile.openRead();
-    await for (final chunk in input) {
-      final encryptedChunk = encrypter.encryptBytes(chunk, iv: iv);
-      outFile.add(encryptedChunk.bytes);
-    }
-
-    await outFile.close();
-    await deleteDownloadsFolder();
-    print('✅ Encrypted to: $encryptedPath');
-    return encryptedPath;
-  }
-
-  Future<File> decryptFile(String videoTitle, String password) async {
-    final appDir = await getApplicationDocumentsDirectory();
-
-    final String decryptedPath = await compute(
-      decryptFileIsolate,
-      DecryptParams(
-        videoTitle: videoTitle,
-        password: password,
-        appDirPath: appDir.path,
-      ),
-    );
-    print('✅ decryptedPath: $decryptedPath');
-    return File(decryptedPath);
-  }
-
-  Future<void> deleteDownloadsFolder() async {
     final Directory appDir = await getApplicationDocumentsDirectory();
-    final Directory downloadsDir = Directory(p.join(appDir.path, 'downloads'));
+    final Directory protectedDir = Directory('${appDir.path}/protected');
 
-    if (await downloadsDir.exists()) {
-      await downloadsDir.delete(recursive: true);
-      print('✅ downloads folder deleted successfully');
-    } else {
-      print('ℹ️ downloads folder does not exist');
+    if (!await protectedDir.exists()) {
+      await protectedDir.create(recursive: true);
     }
+
+    final String outputPath = '${protectedDir.path}/$videoId.lockedvid';
+    final IOSink output = File(outputPath).openWrite();
+
+    try {
+      // Add a fake 512-byte header to make it unplayable by external players
+      final Uint8List fakeHeader = Uint8List.fromList(
+        List.generate(headerSize, (i) => (i * 7 + 3) % 256),
+      );
+
+      output.add(fakeHeader);
+
+      // Write the actual video content
+      final Stream<List<int>> videoStream = inputFile.openRead();
+      await videoStream.forEach(output.add);
+
+      await output.close();
+
+      // ✅ Delete the original file after obfuscation is done
+      if (await inputFile.exists()) {
+        await inputFile.delete();
+      }
+
+      return outputPath;
+    } catch (e) {
+      await output.close(); // Make sure we close on error too
+      rethrow;
+    }
+  }
+}
+
+class VideoReader {
+  static const int headerSize = 512;
+
+  /// Prepare obfuscated video by stripping the fake header
+  static Future<File> prepareForPlayback(
+    String obfuscatedPath,
+    String videoId,
+  ) async {
+    final Directory appDir = await getApplicationDocumentsDirectory();
+    final Directory tempDir = Directory('${appDir.path}/temp');
+
+    if (!await tempDir.exists()) {
+      await tempDir.create(recursive: true);
+    }
+
+    final String fixedPath = '${tempDir.path}/$videoId.mp4';
+
+    final inputFile = File(obfuscatedPath).openRead();
+    final output = File(fixedPath).openWrite();
+
+    bool skipped = false;
+    int totalRead = 0;
+
+    await for (final chunk in inputFile) {
+      if (!skipped) {
+        if (totalRead + chunk.length <= headerSize) {
+          totalRead += chunk.length;
+          continue; // skip whole chunk
+        } else {
+          // Skip only remaining bytes of the header
+          final toSkip = headerSize - totalRead;
+          final remaining = chunk.sublist(toSkip);
+          output.add(remaining);
+          skipped = true;
+        }
+      } else {
+        output.add(chunk);
+      }
+    }
+
+    await output.close();
+    return File(fixedPath);
   }
 }

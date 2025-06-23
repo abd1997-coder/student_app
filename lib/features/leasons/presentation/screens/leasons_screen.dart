@@ -21,12 +21,14 @@ class _LeasonsScreenState extends State<LeasonsScreen>
   String _selectedSubject = 'الكيمياء';
 
   late TabController tabController;
-  int selectedTap = 0;
+  int selectedTap = 1;
   LeasonsBloc leasonsBloc = getIt<LeasonsBloc>();
+  MaterialsBloc materialsBloc = getIt<MaterialsBloc>();
   @override
   void initState() {
     super.initState();
     tabController = TabController(initialIndex: 0, length: 3, vsync: this);
+    materialsBloc.add(const MaterialsEvent.fetchMaterials());
   }
 
   @override
@@ -58,10 +60,10 @@ class _LeasonsScreenState extends State<LeasonsScreen>
                     fit: BoxFit.cover,
                   ),
                 ),
-                child: Column(
+                child: const Column(
                   children: <Widget>[
-                    const SizedBox(height: 25),
-                    const Text(
+                    SizedBox(height: 25),
+                    Text(
                       'دروسي',
                       style: TextStyle(
                         color: Colors.white,
@@ -69,8 +71,8 @@ class _LeasonsScreenState extends State<LeasonsScreen>
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
+                    SizedBox(height: 8),
+                    Text(
                       'هنا ستجد الفيديوهات التعليمية التي قمت بشرائها للوصول لها بسهولة',
                       style: TextStyle(
                         color: Palette.white,
@@ -79,7 +81,7 @@ class _LeasonsScreenState extends State<LeasonsScreen>
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     // Row(
                     //   children: <Widget>[
@@ -163,10 +165,19 @@ class _LeasonsScreenState extends State<LeasonsScreen>
           SizedBox(
             height: 40,
             child: BlocConsumer<MaterialsBloc, MaterialsState>(
-              bloc:
-                  getIt<MaterialsBloc>()
-                    ..add(const MaterialsEvent.fetchMaterials()),
-              listener: (BuildContext context, MaterialsState state) {},
+              bloc: materialsBloc,
+              listener: (BuildContext context, MaterialsState state) {
+                state.maybeWhen(
+                  orElse: () {},
+                  loaded: (List<MaterialData> materials) {
+                    leasonsBloc.add(
+                      LeasonsEvent.fetchLeasonsByMaterialId(
+                        materials.first.id ?? '',
+                      ),
+                    );
+                  },
+                );
+              },
               builder: (BuildContext context, MaterialsState state) {
                 return state.when(
                   initial: () => const SizedBox.shrink(),
