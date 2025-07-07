@@ -62,6 +62,16 @@ class _MaterialDetailViewState extends State<MaterialDetailView> {
             orElse: () {
               return Center(child: Text("$state"));
             },
+            failedMaterial: (GeneralException? generalException) {
+              return Center(
+                child: GlobalErrorWidget(
+                  generalException: generalException,
+                  onPressed: () {
+                    materialBloc.add(MaterialEvent.getMaterialByID(widget.id));
+                  },
+                ),
+              );
+            },
             loadingMaterial: () {
               return const LoadingScreen();
             },

@@ -12,6 +12,7 @@ void downloadSheet({
   required String videoUrl,
   required Function(String) onQualitySelected,
   required String videoId,
+  required Function(int) onStartDownload,
 }) {
   showModalBottomSheet(
     context: context,
@@ -24,6 +25,7 @@ void downloadSheet({
           videoUrl: videoUrl,
           onQualitySelected: onQualitySelected,
           videoTitle: videoId,
+          onStartDownload: onStartDownload,
         ),
   );
 }
@@ -34,10 +36,13 @@ class DownloadSheetContent extends StatefulWidget {
     required this.videoUrl,
     required this.onQualitySelected,
     required this.videoTitle,
+    required this.onStartDownload,
   });
   final String videoUrl;
   final Function(String) onQualitySelected;
   final String videoTitle;
+  final Function(int) onStartDownload;
+
   @override
   State<DownloadSheetContent> createState() => _DownloadSheetContentState();
 }
@@ -161,15 +166,15 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
                             child: Container(
                               margin: const EdgeInsets.symmetric(horizontal: 8),
                               child: Text(
-                                quality.quality.toString(),
+                                "${bytesToMB(quality.size).toStringAsFixed(2)} MB",
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           ),
-                          // Text(
-                          //   quality.fps.toString(),
-                          //   style: const TextStyle(fontSize: 16),
-                          // ),
+                          Text(
+                            quality.quality.toString(),
+                            style: const TextStyle(fontSize: 16),
+                          ),
                           Radio<VideoQuality>(
                             value: quality,
                             groupValue: selectedValue,
@@ -212,12 +217,16 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
     );
   }
 
+  double bytesToMB(int bytes) {
+    return bytes / (1024 * 1024);
+  }
+
   Future<void> startDownload(VideoQuality quality, String videoId) async {
     final Directory appDir = await getApplicationDocumentsDirectory();
     final Directory downloadsDir = Directory('${appDir.path}/downloads');
-    final filePath = '${downloadsDir.path}/${videoId}_mearged.mp4';
-    final inputFile = File(filePath);
-
+    final String filePath = '${downloadsDir.path}/${videoId}_mearged.mp4';
+    final File inputFile = File(filePath);
+    widget.onStartDownload(0);
     try {
       if (widget.videoUrl.isEmpty) {
         throw Exception('Invalid URL: URL is empty');
@@ -251,16 +260,16 @@ class _DownloadSheetContentState extends State<DownloadSheetContent> {
         (DownloadProgress progress) async {
           final int progressPercent = (progress.progress * 100).round();
           await _showProgressNotification(progressPercent, notificationId);
+          widget.onStartDownload(progressPercent);
         },
         onDone: () async {
           try {
+            widget.onStartDownload(100);
             if (!await inputFile.exists()) {
               print('File not found: $filePath');
             } else {
-              final protectedPath = await VideoProtector.saveObfuscatedVideo(
-                inputFile,
-                videoId,
-              );
+              final String protectedPath =
+                  await VideoProtector.saveObfuscatedVideo(inputFile, videoId);
               print('Protected video saved at: $protectedPath');
             }
 
@@ -345,7 +354,7 @@ class VideoProtector {
     try {
       // Add a fake 512-byte header to make it unplayable by external players
       final Uint8List fakeHeader = Uint8List.fromList(
-        List.generate(headerSize, (i) => (i * 7 + 3) % 256),
+        List.generate(headerSize, (int i) => (i * 7 + 3) % 256),
       );
 
       output.add(fakeHeader);
@@ -386,21 +395,21 @@ class VideoReader {
 
     final String fixedPath = '${tempDir.path}/$videoId.mp4';
 
-    final inputFile = File(obfuscatedPath).openRead();
-    final output = File(fixedPath).openWrite();
+    final Stream<List<int>> inputFile = File(obfuscatedPath).openRead();
+    final IOSink output = File(fixedPath).openWrite();
 
     bool skipped = false;
     int totalRead = 0;
 
-    await for (final chunk in inputFile) {
+    await for (final List<int> chunk in inputFile) {
       if (!skipped) {
         if (totalRead + chunk.length <= headerSize) {
           totalRead += chunk.length;
           continue; // skip whole chunk
         } else {
           // Skip only remaining bytes of the header
-          final toSkip = headerSize - totalRead;
-          final remaining = chunk.sublist(toSkip);
+          final int toSkip = headerSize - totalRead;
+          final List<int> remaining = chunk.sublist(toSkip);
           output.add(remaining);
           skipped = true;
         }

@@ -87,7 +87,7 @@ String? validateInput(
     return _validateMax(input, limit);
   }
   if (validationTypes.contains(ValidationType.phone)) {
-    if (input.length != 9) {
+    if (input.length != 10) {
       return LocaleKeys.phoneError.tr();
     }
   }

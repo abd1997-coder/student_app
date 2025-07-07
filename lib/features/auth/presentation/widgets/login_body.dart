@@ -107,7 +107,7 @@ class _LoginBodyState extends State<LoginBody>
                 const SizedBox(height: 23),
                 passwordTextField(),
 
-                const SizedBox(height: 70),
+                const SizedBox(height: 30),
                 GlobalButton(
                   height: 65,
                   controller: globalButtonController,
@@ -134,7 +134,7 @@ class _LoginBodyState extends State<LoginBody>
                     ),
                   ),
                 ),
-
+                const SizedBox(height: 12),
                 // GlobalButton(
                 //   backgroundColor: context.theme.scaffoldBackgroundColor,
                 //
@@ -179,15 +179,15 @@ class _LoginBodyState extends State<LoginBody>
           valueListenable: phoneNumberController,
           builder: (BuildContext context, String? value, Widget? child) {
             return Directionality(
-              textDirection: TextDirection.ltr,
+              textDirection: TextDirection.rtl,
               child: TextInputWidget(
                 isEmpty: value?.isEmpty ?? false,
                 controller: phoneNumberTextEditingController,
                 focusNode: phoneNumberFocusNode,
                 keyboardType: TextInputType.phone,
 
-                maxLength: 9,
-                prefixText: '+963',
+                maxLength: 10,
+                prefixText: ' ',
                 nextFocusNode: passwordFocusNode,
                 counterBuilder: (
                   BuildContext context, {

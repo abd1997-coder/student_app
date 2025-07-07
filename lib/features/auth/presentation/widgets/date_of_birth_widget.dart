@@ -1,7 +1,6 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 
-
 import '../../../../core/core.dart';
 
 class DateOfBirthWidget extends StatefulWidget {
@@ -16,7 +15,7 @@ class _DateOfBirthWidgetState extends State<DateOfBirthWidget> {
   // For instance, years can be from 1900 up to current year or beyond, etc.
   final List<String> _years = List<String>.generate(
     51,
-    (int index) => (1975 + index).toString(),
+    (int index) => (1990 + index).toString(),
   );
   final List<String> _months = List<String>.generate(
     12,

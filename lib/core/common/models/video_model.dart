@@ -7,6 +7,7 @@ class VideoModel {
   final String? unit;
   final bool? canView;
   final String? price;
+  final String? description;
   VideoModel({
     required this.id,
     required this.title,
@@ -16,6 +17,7 @@ class VideoModel {
     required this.unit,
     required this.canView,
     required this.price,
+    required this.description,
   });
 
   factory VideoModel.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,7 @@ class VideoModel {
       unit: json['unit'],
       canView: json['can_view'],
       price: json['price'],
+      description: json['description'],
     );
   }
 
@@ -41,6 +44,7 @@ class VideoModel {
       'unit': unit,
       'can_view': canView,
       'price': price,
+      'description': description,
     };
   }
 }

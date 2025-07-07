@@ -36,7 +36,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   List<VideoQuality> _availableQualities = [];
   VideoPlayerController? _localVideoController;
   bool _isDecodedVideoReady = false;
-
+  int? progressPercent;
   void _handleQualitiesReady(List<VideoQuality> qualities) {
     setState(() {
       _availableQualities = qualities;
@@ -131,9 +131,21 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                     onQualitySelected: (quality) {
                                       print(quality);
                                     },
+                                    onStartDownload: (int value) {
+                                      progressPercent = value;
+                                      if (value == 100) {
+                                        progressPercent = null;
+                                      }
+                                      setState(() {});
+                                    },
                                   );
                                 },
-                                child: AssetsManager.svg.downloadIcon.svg(),
+                                child:
+                                    (progressPercent != null)
+                                        ? donwloadProgressWidget(
+                                          progressPercent!,
+                                        )
+                                        : AssetsManager.svg.downloadIcon.svg(),
                               ),
                             ],
                           ),
@@ -151,9 +163,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'سيتم في هذا الفيديو شرح نظرة عامة عن الوحدة وتعريف الأعداد العقدية والعمليات عليها بصورة واضحة وبسيطة',
-                      style: TextStyle(color: Palette.darkGray, fontSize: 15),
+                    Text(
+                      widget.videoModel.description ?? "-",
+                      style: const TextStyle(color: Palette.darkGray, fontSize: 15),
                     ),
                     const SizedBox(height: 15),
                   ],
@@ -178,6 +190,30 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   const SizedBox.shrink(),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  donwloadProgressWidget(int progressPercent) {
+    return Center(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SizedBox(
+            width: 30,
+            height: 30,
+            child: CircularProgressIndicator(
+              value: progressPercent / 100, // النسبة تكون من 0.0 إلى 1.0
+              strokeWidth: 6,
+              backgroundColor: Colors.grey.shade300,
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+            ),
+          ),
+          Text(
+            '${progressPercent.toInt()}%',
+            style: const TextStyle(fontWeight: FontWeight.normal ,fontSize: 9),
           ),
         ],
       ),

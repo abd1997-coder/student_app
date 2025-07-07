@@ -7,8 +7,8 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-        return const Center(
-      child: Text("Soong", style: TextStyle(color: Palette.primary)),
+    return const Center(
+      child: Text("soon", style: TextStyle(color: Palette.primary)),
     );
     return Directionality(
       textDirection: TextDirection.rtl,

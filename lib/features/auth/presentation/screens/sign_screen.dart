@@ -38,70 +38,68 @@ class _SignViewState extends State<SignView>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: DecoratedPage(
-          child: Column(
-            children: <Widget>[
-              const SizedBox(height: 40),
-              AssetsManager.images.decoratedLogo.image(
-                width: ResponsiveUtils.responsiveSize(
-                  context,
-                  mobile: 88,
-                  tablet: 120,
-                  desktop: 120,
-                ),
-                height: ResponsiveUtils.responsiveSize(
-                  context,
-                  mobile: 88,
-                  tablet: 120,
-                  desktop: 120,
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: DecoratedPage(
+        child: Column(
+          children: <Widget>[
+            const SizedBox(height: 40),
+            AssetsManager.images.decoratedLogo.image(
+              width: ResponsiveUtils.responsiveSize(
+                context,
+                mobile: 88,
+                tablet: 120,
+                desktop: 120,
+              ),
+              height: ResponsiveUtils.responsiveSize(
+                context,
+                mobile: 88,
+                tablet: 120,
+                desktop: 120,
+              ),
+            ),
+            const SizedBox(height: 40),
+            TabBar(
+              controller: _tabController,
+              dividerColor: Colors.transparent,
+              dividerHeight: 0,
+              labelStyle: context.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+
+              physics: const NeverScrollableScrollPhysics(),
+              isScrollable: false,
+              labelColor: context.colorScheme.primary,
+              unselectedLabelColor: context.colorScheme.surface,
+              unselectedLabelStyle: context.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+              tabAlignment: TabAlignment.fill,
+
+              indicator: BoxDecoration(
+                color: context.theme.scaffoldBackgroundColor,
+
+                borderRadius: const BorderRadiusDirectional.only(
+                  topEnd: Radius.circular(16),
+                  topStart: Radius.circular(16),
                 ),
               ),
-              const SizedBox(height: 40),
-              TabBar(
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelPadding: const EdgeInsets.symmetric(vertical: 8),
+              tabs: <Widget>[
+                Tab(text: LocaleKeys.signUp.tr()),
+                Tab(text: LocaleKeys.signIn.tr()),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(
                 controller: _tabController,
-                dividerColor: Colors.transparent,
-                dividerHeight: 0,
-                labelStyle: context.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-
                 physics: const NeverScrollableScrollPhysics(),
-                isScrollable: false,
-                labelColor: context.colorScheme.primary,
-                unselectedLabelColor: context.colorScheme.surface,
-                unselectedLabelStyle: context.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-                tabAlignment: TabAlignment.fill,
 
-                indicator: BoxDecoration(
-                  color: context.theme.scaffoldBackgroundColor,
-
-                  borderRadius: const BorderRadiusDirectional.only(
-                    topEnd: Radius.circular(16),
-                    topStart: Radius.circular(16),
-                  ),
-                ),
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelPadding: const EdgeInsets.symmetric(vertical: 8),
-                tabs: <Widget>[
-                  Tab(text: LocaleKeys.signUp.tr()),
-                  Tab(text: LocaleKeys.signIn.tr()),
-                ],
+                children: const <Widget>[SignupBody(), LoginBody()],
               ),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  physics: const NeverScrollableScrollPhysics(),
-
-                  children: const <Widget>[SignupBody(), LoginBody()],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

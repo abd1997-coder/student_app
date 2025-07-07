@@ -34,7 +34,7 @@ class _LeasonsScreenState extends State<LeasonsScreen>
   @override
   Widget build(BuildContext context) {
     // return const Center(
-    //   child: Text("Soong", style: TextStyle(color: Palette.primary)),
+    //   child: Text("soon", style: TextStyle(color: Palette.primary)),
     // );
     return DefaultTabController(
       length: _tabs.length,

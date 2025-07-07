@@ -35,15 +35,16 @@ class SearchableDDL<T> extends StatelessWidget {
       },
       suffixProps: const DropdownSuffixProps(
         dropdownButtonProps: DropdownButtonProps(
-          iconClosed: Icon(Icons.keyboard_arrow_down, size: 24),
-          iconOpened: Icon(Icons.keyboard_arrow_up, size: 24),
+          iconClosed: Icon(Icons.keyboard_arrow_down),
+          iconOpened: Icon(Icons.keyboard_arrow_up),
+          padding: EdgeInsets.zero,
+          iconSize: 20,
         ),
       ),
 
       popupProps: PopupProps<T>.menu(
         showSearchBox: showSearchBox,
         showSelectedItems: true,
-
         itemBuilder:
             (BuildContext context, T item, bool isDisabled, bool isSelected) =>
                 Padding(
@@ -85,7 +86,9 @@ class SearchableDDL<T> extends StatelessWidget {
           hintStyle: context.bodySmall?.copyWith(
             fontWeight: FontWeight.w400,
             color: context.theme.hintColor,
+            fontSize: 11,
           ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 5),
           hintText: hintText,
           constraints: const BoxConstraints(minHeight: 46),
 

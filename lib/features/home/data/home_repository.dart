@@ -42,4 +42,5 @@ class HomeRepository {
 
     return homeModel;
   }
+
 }

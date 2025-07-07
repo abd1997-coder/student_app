@@ -28,22 +28,27 @@ class _ThirdItemOnboardingState extends State<ThirdItemOnboarding>
         children: <Widget>[
           Align(
             alignment: Alignment.centerRight,
-            child: AssetsManager.images.onboarding.item3.image(),
+            child: Container(
+              height: 320,
+              child: AssetsManager.images.onboarding.item3.image(),
+            ),
           ),
-          SizedBox(
-            width: 350,
-            child: Column(
-              spacing: 25,
-              children: <Widget>[
-                Text(LocaleKeys.whyIsNajahi.tr(), style: titleStyle(context)),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Column(
+                spacing: 25,
+                children: <Widget>[
+                  Text(LocaleKeys.whyIsNajahi.tr(), style: titleStyle(context)),
 
-                Text(
-                  LocaleKeys.najahiCanDo.tr(),
-                  style: subTitleStyle(context),
+                  Text(
+                    LocaleKeys.najahiCanDo.tr(),
+                    style: subTitleStyle(context),
 
-                  textAlign: TextAlign.start,
-                ),
-              ],
+                    textAlign: TextAlign.start,
+                  ),
+                ],
+              ),
             ),
           ),
 

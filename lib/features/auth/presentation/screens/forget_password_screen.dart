@@ -109,10 +109,22 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
                           onTap: () {
                             context.maybePop();
                           },
-                          child: Icon(
-                            Icons.arrow_back_ios,
-                            color: context.colorScheme.surface,
+                          child:Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.only(
+                            right: 8,
+                            top: 4,
+                            bottom: 4,
                           ),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                          ),
+                          child: const Icon(
+                            Icons.arrow_back_ios,
+                            color: Colors.black87,
+                          ),
+                        ),
                         ),
 
                         AssetsManager.images.decoratedLogo.image(
@@ -194,7 +206,7 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
           valueListenable: phoneNumberController,
           builder: (BuildContext context, String? value, Widget? child) {
             return Directionality(
-              textDirection: TextDirection.ltr,
+              textDirection: TextDirection.rtl,
               child: TextInputWidget(
                 isEmpty: value?.isEmpty ?? false,
                 controller: phoneNumberTextEditingController,
@@ -203,8 +215,8 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
                 onChanged: (String value) {
                   phoneNumberController.onTextChange(value);
                 },
-                maxLength: 9,
-                prefixText: '+963',
+                maxLength: 10,
+                prefixText: '',
                 counterBuilder: (
                   BuildContext context, {
                   int? currentLength,

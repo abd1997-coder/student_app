@@ -28,9 +28,9 @@ class SessionWidget extends StatelessWidget {
                 : Container(
                   margin: const EdgeInsets.symmetric(horizontal: 12),
                   padding: const EdgeInsets.all(5),
-                  decoration:  BoxDecoration(
+                  decoration: BoxDecoration(
                     color: Palette.primary.withValues(alpha: 0.4),
-                    borderRadius:const  BorderRadius.all(Radius.circular(100)),
+                    borderRadius: const BorderRadius.all(Radius.circular(100)),
                   ),
                   child: const Icon(
                     Icons.lock,

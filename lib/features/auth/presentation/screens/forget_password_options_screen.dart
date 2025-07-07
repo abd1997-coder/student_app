@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student_app/core/managers/assets/app_assets.dart';
 import 'package:student_app/features/auth/bloc/authentication_bloc.dart';
 import 'package:student_app/features/auth/presentation/widgets/decorated_page.dart';
 
@@ -46,9 +47,21 @@ class _ForgetPasswordOptionsViewState extends State<ForgetPasswordOptionsView> {
                         onTap: () {
                           context.maybePop();
                         },
-                        child: Icon(
-                          Icons.arrow_back_ios,
-                          color: context.colorScheme.surface,
+                        child: Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.only(
+                            right: 8,
+                            top: 4,
+                            bottom: 4,
+                          ),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                          ),
+                          child: const Icon(
+                            Icons.arrow_back_ios,
+                            color: Colors.black87,
+                          ),
                         ),
                       ),
 
@@ -85,8 +98,9 @@ class _ForgetPasswordOptionsViewState extends State<ForgetPasswordOptionsView> {
                         horizontal: 40,
                       ),
                       child: Column(
-                        spacing: 100,
+                        spacing: 50,
                         mainAxisSize: MainAxisSize.max,
+
                         children: <Widget>[
                           Text(
                             'نسيت كلمة المرور',
@@ -108,7 +122,6 @@ class _ForgetPasswordOptionsViewState extends State<ForgetPasswordOptionsView> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               spacing: 10,
-
                               children: <Widget>[
                                 Text(
                                   'استعادة عن طريق الرقم',
@@ -117,10 +130,11 @@ class _ForgetPasswordOptionsViewState extends State<ForgetPasswordOptionsView> {
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                                Icon(
-                                  Icons.call,
-
-                                  color: context.colorScheme.surface,
+                                Image.asset(
+                                  AppAssets.phoneIcon,
+                                  width: 45,
+                                  height: 45,
+                                  fit: BoxFit.cover,
                                 ),
                               ],
                             ),
@@ -140,9 +154,11 @@ class _ForgetPasswordOptionsViewState extends State<ForgetPasswordOptionsView> {
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                                Icon(
-                                  Icons.person,
-                                  color: context.colorScheme.surface,
+                                Image.asset(
+                                  AppAssets.adminIcon,
+                                  width: 45,
+                                  height: 45,
+                                  fit: BoxFit.cover,
                                 ),
                               ],
                             ),

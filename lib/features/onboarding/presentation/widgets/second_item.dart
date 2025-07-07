@@ -39,19 +39,22 @@ class _SecondItemOnboardingState extends State<SecondItemOnboarding>
                     style: titleStyle(context),
                   ),
 
-                  Text(
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
                     LocaleKeys.ourFeatureMsg.tr(),
                     style: subTitleStyle(context),
 
                     textAlign: TextAlign.start,
                   ),
+                  )
                 ],
               ),
             ),
 
             Align(
               alignment: Alignment.centerRight,
-              child: AssetsManager.images.onboarding.item2.image(height: 443),
+              child: AssetsManager.images.onboarding.item2.image(height: 300),
             ),
             Align(
               alignment: Alignment.bottomLeft,
@@ -62,10 +65,8 @@ class _SecondItemOnboardingState extends State<SecondItemOnboarding>
                   title: LocaleKeys.next,
                   color: context.colorScheme.secondary,
                   onPressed: () {
-                    widget.pageController.animateToPage(
+                    widget.pageController.jumpToPage(
                       2,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.bounceIn,
                     );
                   },
                 ),

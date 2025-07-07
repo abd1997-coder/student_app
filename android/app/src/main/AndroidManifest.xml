@@ -17,6 +17,7 @@
         tools:replace="android:label"
         xmlns:tools="http://schemas.android.com/tools"
         android:allowBackup="false"
+        android:extractNativeLibs="true"
         android:fullBackupContent="false"
         >
         

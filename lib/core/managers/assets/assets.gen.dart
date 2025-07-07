@@ -217,6 +217,16 @@ class $AssetsSvgGen {
   ];
 }
 
+
+class $AssetsPngGen {
+  const $AssetsPngGen();
+
+  /// File path: assets/svg/add_balance_icon.svg
+  SvgGenImage get backIcon =>
+      const SvgGenImage('assets/svg/png/back_icon.png');
+
+}
+
 class $AssetsTranslationsGen {
   const $AssetsTranslationsGen();
 
@@ -378,6 +388,7 @@ class AssetsManager {
 
   static const $AssetsImagesGen images = $AssetsImagesGen();
   static const $AssetsSvgGen svg = $AssetsSvgGen();
+  static const $AssetsPngGen png = $AssetsPngGen();
   static const $AssetsTranslationsGen translations = $AssetsTranslationsGen();
 }
 

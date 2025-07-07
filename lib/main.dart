@@ -5,19 +5,21 @@ import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:root_checker_plus/root_checker_plus.dart';
 import 'package:student_app/core/database/database_helper.dart';
-import 'package:y_player/y_player.dart';
+import 'package:y_player/y_player.dart' show YPlayerInitializer;
+import 'package:media_kit/media_kit.dart';
 
 import 'app.dart' show App;
 import 'core/core.dart';
 import 'generated/codegen_loader.g.dart';
-import 'package:media_kit/media_kit.dart';
 
+// test 678x`
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+    MediaKit.ensureInitialized();
+
   YPlayerInitializer.ensureInitialized();
   await DatabaseHelper.instance.initDatabase();
   Bloc.observer = MyBlocObserver();
-  MediaKit.ensureInitialized();
   // downloader
   await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
 
@@ -68,5 +70,5 @@ Future<void> main() async {
   );
 }
 
-// 999885555
+// 0954631999
 // Abdabd123@

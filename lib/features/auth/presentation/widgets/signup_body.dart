@@ -243,13 +243,13 @@ class _SignupBodyState extends State<SignupBody>
           valueListenable: phoneNumberController,
           builder: (BuildContext context, String? value, Widget? child) {
             return Directionality(
-              textDirection: TextDirection.ltr,
+              textDirection: TextDirection.rtl,
               child: TextInputWidget(
                 isEmpty: value?.isEmpty ?? false,
                 controller: phoneNumberTextEditingController,
                 focusNode: phoneNumberFocusNode,
-                maxLength: 9,
-                prefixText: '+963',
+                maxLength: 10,
+                prefixText: ' ',
                 counterBuilder: (
                   BuildContext context, {
                   int? currentLength,
@@ -298,14 +298,14 @@ class _SignupBodyState extends State<SignupBody>
           valueListenable: parentPhoneNumberController,
           builder: (BuildContext context, String? value, Widget? child) {
             return Directionality(
-              textDirection: TextDirection.ltr,
+              textDirection: TextDirection.rtl,
               child: TextInputWidget(
                 isEmpty: value?.isEmpty ?? false,
 
                 controller: parentPhoneNumberTextEditingController,
                 focusNode: parentPhoneNumberFocusNode,
-                maxLength: 9,
-                prefixText: '+963',
+                maxLength: 10,
+                prefixText: '',
                 counterBuilder: (
                   BuildContext context, {
                   int? currentLength,
