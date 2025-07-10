@@ -35,8 +35,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
   int selectedCategory = 0;
   List<VideoQuality> _availableQualities = [];
   VideoPlayerController? _localVideoController;
-  bool _isDecodedVideoReady = false;
+  final bool _isDecodedVideoReady = false;
   int? progressPercent;
+
   void _handleQualitiesReady(List<VideoQuality> qualities) {
     setState(() {
       _availableQualities = qualities;
@@ -165,7 +166,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     const SizedBox(height: 8),
                     Text(
                       widget.videoModel.description ?? "-",
-                      style: const TextStyle(color: Palette.darkGray, fontSize: 15),
+                      style: const TextStyle(
+                        color: Palette.darkGray,
+                        fontSize: 15,
+                      ),
                     ),
                     const SizedBox(height: 15),
                   ],
@@ -213,7 +217,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
           ),
           Text(
             '${progressPercent.toInt()}%',
-            style: const TextStyle(fontWeight: FontWeight.normal ,fontSize: 9),
+            style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 9),
           ),
         ],
       ),

@@ -182,8 +182,12 @@ class _SavedItemsScreenState extends State<SavedItemsScreen>
                       color: Colors.redAccent,
                       child: const Icon(Icons.delete, color: Colors.white),
                     ),
-                    child: SessionWidget(
-                      videoModel: null 
+                    child: Container(
+                    // child: SessionWidget(
+                      // videoModel: null,
+                      // onClickBuy: () {},
+                      // onTap: () {},
+                      
                     ),
                   ),
                 );

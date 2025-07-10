@@ -189,9 +189,12 @@ class _DownloadedLeasonsScreenState extends State<DownloadedLeasonsScreen>
                       color: Colors.redAccent,
                       child: const Icon(Icons.delete, color: Colors.white),
                     ),
-                    child: SessionWidget(
-                      videoModel: null,
-                    ),
+                    child: SizedBox(),
+                    // child: SessionWidget(
+                    //   video: null,
+                    //   onClickBuy: () {},
+                    //   onTap: () {},
+                    // ),
                   ),
                 );
               },
@@ -221,7 +224,7 @@ class _PartsScreenState extends State<PartsScreen> {
           itemBuilder: (BuildContext context, int index) {
             return PartWidget(
               myLeason: false,
-              unit:null,
+              unit: null,
               pruchesBloc: null,
               onTogglePart:
                   () => setState(() {

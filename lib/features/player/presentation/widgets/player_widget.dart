@@ -54,6 +54,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       onStateChanged: (YPlayerStatus status) {},
       errorWidget: playerErrorWidget(),
       aspectRatio: 3 / 9,
+      
     );
   }
 
@@ -95,9 +96,9 @@ class _PlayerWidgetState extends State<PlayerWidget> {
         availableQualities = qualities;
       });
 
-      if (availableQualities.isNotEmpty) {
-        await controller?.setQuality(144);
-      }
+      // if (availableQualities.isNotEmpty) {
+      //   await controller?.setQuality(144);
+      // }
       widget.onQualitiesReady(qualities);
       controller?.play();
     } catch (e) {

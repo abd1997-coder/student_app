@@ -7,7 +7,7 @@ import 'package:student_app/core/common/widget/appWidget/session_widget.dart';
 import 'package:student_app/core/common/widget/bottomSheets/material_purchase_sheet_content.dart';
 import 'package:student_app/core/common/widget/price_widget.dart'
     show PriceWidget;
-import 'package:student_app/core/managers/router/router.gr.dart';
+import 'package:student_app/core/core.dart';
 import 'package:student_app/core/managers/theme/palette.dart';
 import 'package:student_app/core/pruches/bloc/pruches_bloc.dart';
 
@@ -18,13 +18,13 @@ class ChapterWidget extends StatelessWidget {
   final PruchesBloc? pruchesBloc;
   final bool myLeason;
   const ChapterWidget({
-    Key? key,
+    super.key,
     required this.unit,
     required this.onToggleChapter,
     required this.onToggleLesson,
     this.pruchesBloc,
     this.myLeason = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +75,28 @@ class ChapterWidget extends StatelessWidget {
                     ),
                   ),
                   ((GlobalFunctions.hasUnviewableVideo(unit!)))
-                      ? PriceWidget(point: "${unit?.price}")
+                      ? InkWell(
+                        onTap: () {
+                          showMaterialPurchaseSheet(
+                            context: context,
+                            objectNmae: "الوحدة",
+                            balance: 
+                              PrefData.getUserBalance() ?? '0',
+                            
+                            cost: unit?.price ?? "*",
+                            onClickBuy: () {
+                              context.router.maybePop();
+                              pruchesBloc!.add(
+                                PruchesEvent.buyMaterial(
+                                  unit?.id ?? '---',
+                                  PruchesType.unit,
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        child: PriceWidget(point: "${unit?.price}"),
+                      )
                       : const SizedBox(),
 
                   Icon(
@@ -92,84 +113,32 @@ class ChapterWidget extends StatelessWidget {
         if (unit!.isExpanded)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 0),
-            margin: EdgeInsets.only(bottom: 12),
+            margin: const EdgeInsets.only(bottom: 12),
             child: Column(
               children:
                   (unit?.videos ?? [])
                       .map(
-                        (VideoModel video) => InkWell(
-                          onTap: () async {
-                            if (myLeason) {
-                              bool exists =
-                                  await GlobalFunctions.doesVideoExistLocally(
-                                    video.id ?? '',
-                                  );
-                              if (exists) {
-                                print("exists");
-                                context.router.push(
-                                  LocalPlayerRoute(
-                                    myLeason: myLeason,
-                                    videoModel: video,
-                                    teacherName:
-                                        unit
-                                            ?.teachers
-                                            ?.first
-                                            .user
-                                            ?.fullName ??
-                                        "",
-                                  ),
-                                );
-                              } else {
-                                showSnackBar(
-                                  context: context,
-                                  message: "هذا المقطع غير محمل ",
-                                  isError: true,
-                                );
-                              }
-                            } else {
-                              if (video.canView ?? false) {
-                                context.router.push(
-                                  PlayerRoute(
-                                    myLeason: myLeason,
-                                    videoModel: video,
-                                    teacherName:
-                                        unit?.teachers?.first.user?.fullName ??
-                                        "",
-                                  ),
-                                );
-                              } else {
-                                showMaterialPurchaseSheet(
-                                  context: context,
-                                  balance: 999,
-                                  objectNmae: "وحدة",
-                                  cost: video.price ?? "0",
-                                  onClickBuy: () {
-                                    context.router.maybePop();
-                                    pruchesBloc!.add(
-                                      PruchesEvent.buyMaterial(
-                                        video.id ?? '-1',
-                                        PruchesType.video,
-                                      ),
-                                    );
-                                  },
-                                );
-                              }
-                            }
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: 2,
-                                  height: 12,
-                                  color: Colors.grey,
-                                  margin: EdgeInsets.symmetric(horizontal: 20),
+                        (VideoModel video) => Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 2,
+                                height: 12,
+                                color: Colors.grey,
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 20,
                                 ),
-                                SessionWidget(videoModel: video),
-                              ],
-                            ),
+                              ),
+                              SessionWidget(
+                                video: video,
+                                teacherName:
+                                    unit?.teachers?.first.user?.fullName ?? "",
+                                myLeason: myLeason,
+                                pruchesBloc: pruchesBloc,
+                              ),
+                            ],
                           ),
                         ),
                       )

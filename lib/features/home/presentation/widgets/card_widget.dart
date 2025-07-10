@@ -29,7 +29,16 @@ class CardWidget extends StatelessWidget {
       ),
       child: BlocConsumer<ProfileBloc, ProfileState>(
         bloc: getIt<ProfileBloc>()..add(const ProfileEvent.getProfile()),
-        listener: (BuildContext context, ProfileState state) {},
+        listener: (BuildContext context, ProfileState state) {
+          state.maybeWhen(
+            orElse: () {},
+            getProfileSuccess: (ProfileResults? profileResults) {
+              PrefData.setUserBalance(
+                "${profileResults?.results.student?.balance ?? 0}",
+              );
+            },
+          );
+        },
         builder: (BuildContext context, ProfileState state) {
           return state.maybeWhen(
             orElse: () {

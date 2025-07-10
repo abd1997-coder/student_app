@@ -120,7 +120,9 @@ class PartWidget extends StatelessWidget {
                             showMaterialPurchaseSheet(
                               context: context,
                               objectNmae: "الوحدة",
-                              balance: 999,
+                              balance:
+                                PrefData.getUserBalance() ?? '0',
+                              
                               cost: unit?.price ?? "*",
                               onClickBuy: () {
                                 context.router.maybePop();
@@ -134,7 +136,7 @@ class PartWidget extends StatelessWidget {
                             );
                           },
                           child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 4),
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
                             child: PriceWidget(point: "${unit?.price}"),
                           ),
                         )
@@ -204,72 +206,11 @@ class PartWidget extends StatelessWidget {
                     children:
                         (unit?.videos ?? [])
                             .map(
-                              (VideoModel video) => InkWell(
-                                onTap: () async {
-                                  
-                                  // if (myLeason) {
-                                  //   bool exists =
-                                  //       await GlobalFunctions.doesVideoExistLocally(
-                                  //         video.id ?? '',
-                                  //       );
-                                  //   if (exists) {
-                                  //     print("exists");
-                                  //     // context.router.push(
-                                  //     //   LocalPlayerRoute(
-                                  //     //     myLeason: myLeason,
-                                  //     //     videoModel: video,
-                                  //     //     teacherName:
-                                  //     //         unit
-                                  //     //             ?.teachers
-                                  //     //             ?.first
-                                  //     //             .user
-                                  //     //             ?.fullName ??
-                                  //     //         "",
-                                  //     //   ),
-                                  //     // );
-                                  //   } else {
-                                  //     showSnackBar(
-                                  //       context: context,
-                                  //       message: "هذا المقطع غير محمل ",
-                                  //       isError: true,
-                                  //     );
-                                  //   }
-                                  // } else {
-                                  //   print("video.canView: ${video.canView}");
-                                  //   if (video.canView ?? false) {
-                                  //     context.router.push(
-                                  //       PlayerRoute(
-                                  //         myLeason: myLeason,
-                                  //         videoModel: video,
-                                  //         teacherName:
-                                  //             unit
-                                  //                 ?.teachers
-                                  //                 ?.first
-                                  //                 .user
-                                  //                 ?.fullName ??
-                                  //             "",
-                                  //       ),
-                                  //     );
-                                  //   } else {
-                                  //     showMaterialPurchaseSheet(
-                                  //       context: context,
-                                  //       balance: 999,
-                                  //       cost: video.price ?? "",
-                                  //       objectNmae: "الدرس",
-                                  //       onClickBuy: () {
-                                  //         context.router.maybePop();
-                                  //         pruchesBloc!.add(
-                                  //           PruchesEvent.buyMaterial(
-                                  //             video.id ?? '-1',
-                                  //             PruchesType.video,
-                                  //           ),
-                                  //         );
-                                  //       },
-                                  //     );
-                                  //   }
-                                  // }
-                                },
-                                child: SessionWidget(videoModel: video),
+                              (VideoModel video) => SessionWidget(
+                                video: video,
+                                myLeason: myLeason,
+                                pruchesBloc: pruchesBloc!,
+                                teacherName:  unit?.teachers?.first.user?.fullName ?? "",
                               ),
                             )
                             .toList(),

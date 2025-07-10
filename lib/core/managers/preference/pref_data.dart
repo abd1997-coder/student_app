@@ -47,4 +47,11 @@ class PrefData {
 
   static String? getMaterialData(String id) =>
       Managers.prefManager.get<String>("${PrefKeys.materialData}$id");
+
+  // balance
+  static setUserBalance(String balance) =>
+      Managers.prefManager.set(PrefKeys.balance, balance);
+
+  static String? getUserBalance() =>
+      Managers.prefManager.get<String>(PrefKeys.balance);
 }

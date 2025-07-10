@@ -3,7 +3,7 @@ import 'package:student_app/core/core.dart';
 
 void  showMaterialPurchaseSheet({
   required BuildContext context,
-  required int balance,
+  required String balance,
   required String cost,
   required Function() onClickBuy,
   required String objectNmae
@@ -24,7 +24,7 @@ void  showMaterialPurchaseSheet({
 }
 
 class MaterialPurchaseSheetContent extends StatefulWidget {
-  final int balance;
+  final String balance;
   final String cost;
   final Function() onClickBuy;
   final String objectNmae;
@@ -155,7 +155,7 @@ class _MaterialPurchaseSheetContentState
 
                 // --- info text ---
                 Text(
-                  'علماً أن رصيدك الحالي هو: ${widget.balance} نقطة',
+                  'علماً أن رصيدك الحالي هو: ${widget.balance.split('.')[0]} نقطة',
                   style: const TextStyle(
                     color: Palette.black,
                     fontSize: 16,

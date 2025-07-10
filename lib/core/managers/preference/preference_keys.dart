@@ -10,4 +10,5 @@ class PrefKeys {
   static const String currencyId = '';
   static const String homeData = 'home_data';
   static const String materialData = 'material_data';
+  static const String balance = 'balance';
 }

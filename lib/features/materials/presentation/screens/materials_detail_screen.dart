@@ -169,7 +169,7 @@ class _MaterialDetailViewState extends State<MaterialDetailView> {
                                                       ),
                                                     );
                                                   },
-                                                  balance: 200,
+                                                  balance: "200",
                                                   cost:
                                                       materialResults?.price ??
                                                       "0.0",
@@ -359,7 +359,7 @@ class _MaterialDetailViewState extends State<MaterialDetailView> {
                                             showMaterialPurchaseSheet(
                                               context: context,
                                               objectNmae: "الوحدة",
-                                              balance: 999,
+                                              balance: PrefData.getUserBalance()??'0',
                                               cost: list[index].price ?? "0",
                                               onClickBuy: () {
                                                 context.router.maybePop();

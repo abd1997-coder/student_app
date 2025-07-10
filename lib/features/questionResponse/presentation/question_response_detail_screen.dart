@@ -141,14 +141,17 @@ class _QuestionResponseResponseScreenState
                       color: Colors.redAccent,
                       child: const Icon(Icons.delete, color: Colors.white),
                     ),
-                    child: const SessionWidget(
-                      videoModel:null 
+                    child: Container(),
+                    // child: SessionWidget(
+                    //   videoModel: null,
+                    //   onClickBuy: () {},
+                    //      onTap: () {},
                       // Session(
                       //   duration: "2:30",
                       //   isWatched: false,
                       //   title: "النواس الثقلي البسيط",
                       // ),
-                    ),
+                    
                   ),
                 );
               },
