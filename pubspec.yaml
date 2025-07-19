@@ -49,10 +49,11 @@ dependencies:
   media_kit: ^1.1.10
   media_kit_video: ^1.1.8
   media_kit_libs_android_video: ^1.3.7
-  y_player:
-    path: ./y_player
+  y_player: ^2.0.5+1
   youtube_muxer_2025:
     path: ./youtube_muxer_2025
+  
+  youtube_player_flutter: ^9.1.1
 
   root_checker_plus: ^0.0.4
   collection: ^1.19.1

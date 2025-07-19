@@ -112,119 +112,179 @@ class _MaterialDetailViewState extends State<MaterialDetailView> {
                               SizedBox(
                                 height: 250,
                                 width: double.infinity,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image:
-                                          AssetsManager.images.materialDetail
-                                              .provider(),
-                                      fit: BoxFit.cover,
-                                    ),
-                                    borderRadius: const BorderRadius.only(
-                                      bottomLeft: Radius.circular(20),
-                                      bottomRight: Radius.circular(20),
-                                    ),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Expanded(
-                                        child: SizedBox(
-                                          child: InkWell(
-                                            onTap: () {
-                                              context.router.maybePop();
-                                            },
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image:
+                                              AssetsManager
+                                                  .images
+                                                  .materialDetail
+                                                  .provider(),
+                                          fit: BoxFit.cover,
+                                        ),
+                                        borderRadius: const BorderRadius.only(
+                                          bottomLeft: Radius.circular(20),
+                                          bottomRight: Radius.circular(20),
+                                        ),
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Expanded(
+                                            child: SizedBox(
+                                              child: InkWell(
+                                                onTap: () {
+                                                  context.router.maybePop();
+                                                },
+                                                child: Container(
+                                                  margin:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 8,
+                                                      ),
+                                                  alignment:
+                                                      AlignmentDirectional
+                                                          .centerStart,
+                                                  child:
+                                                      AssetsManager
+                                                          .svg
+                                                          .arrowBack
+                                                          .svg(),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
                                             child: Container(
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 8,
-                                                  ),
                                               alignment:
                                                   AlignmentDirectional
-                                                      .centerStart,
-                                              child:
-                                                  AssetsManager.svg.arrowBack
-                                                      .svg(),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          alignment:
-                                              AlignmentDirectional.centerEnd,
-                                          child: Directionality(
-                                            textDirection: TextDirection.rtl,
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                showMaterialPurchaseSheet(
-                                                  context: context,
-                                                  objectNmae: "الوحدة",
-                                                  onClickBuy: () {
-                                                    context.router.maybePop();
-                                                    pruchesBloc.add(
-                                                      PruchesEvent.buyMaterial(
-                                                        materialResults?.id ??
-                                                            "",
-                                                        PruchesType.material,
-                                                      ),
+                                                      .centerEnd,
+                                              child: Directionality(
+                                                textDirection:
+                                                    TextDirection.rtl,
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    showMaterialPurchaseSheet(
+                                                      context: context,
+                                                      objectNmae: "الوحدة",
+                                                      onClickBuy: () {
+                                                        context.router
+                                                            .maybePop();
+                                                        pruchesBloc.add(
+                                                          PruchesEvent.buyMaterial(
+                                                            materialResults
+                                                                    ?.id ??
+                                                                "",
+                                                            PruchesType
+                                                                .material,
+                                                          ),
+                                                        );
+                                                      },
+                                                      balance: "200",
+                                                      cost:
+                                                          materialResults
+                                                              ?.price ??
+                                                          "0.0",
                                                     );
                                                   },
-                                                  balance: "200",
-                                                  cost:
-                                                      materialResults?.price ??
-                                                      "0.0",
-                                                );
-                                              },
-                                              child:
-                                                  (materialResults
-                                                              ?.isAvailable ??
-                                                          false)
-                                                      ? const SizedBox()
-                                                      : Container(
-                                                        padding:
-                                                            const EdgeInsets.all(
-                                                              10,
-                                                            ),
-                                                        decoration: const BoxDecoration(
-                                                          color: Colors.white,
-                                                          borderRadius:
-                                                              BorderRadius.only(
-                                                                topRight:
-                                                                    Radius.circular(
-                                                                      32,
-                                                                    ),
-                                                                bottomRight:
-                                                                    Radius.circular(
-                                                                      32,
-                                                                    ),
-                                                              ),
-                                                          boxShadow: <
-                                                            BoxShadow
-                                                          >[
-                                                            BoxShadow(
+                                                  child:
+                                                      (materialResults
+                                                                  ?.isAvailable ??
+                                                              false)
+                                                          ? const SizedBox()
+                                                          : Container(
+                                                            padding:
+                                                                const EdgeInsets.all(
+                                                                  10,
+                                                                ),
+                                                            decoration: const BoxDecoration(
                                                               color:
-                                                                  Colors
-                                                                      .black12,
-                                                              blurRadius: 6,
-                                                              offset: Offset(
-                                                                0,
-                                                                3,
-                                                              ),
+                                                                  Colors.white,
+                                                              borderRadius:
+                                                                  BorderRadius.only(
+                                                                    topRight:
+                                                                        Radius.circular(
+                                                                          32,
+                                                                        ),
+                                                                    bottomRight:
+                                                                        Radius.circular(
+                                                                          32,
+                                                                        ),
+                                                                  ),
+                                                              boxShadow: <
+                                                                BoxShadow
+                                                              >[
+                                                                BoxShadow(
+                                                                  color:
+                                                                      Colors
+                                                                          .black12,
+                                                                  blurRadius: 6,
+                                                                  offset:
+                                                                      Offset(
+                                                                        0,
+                                                                        3,
+                                                                      ),
+                                                                ),
+                                                              ],
                                                             ),
-                                                          ],
-                                                        ),
-                                                        child: PriceWidget(
-                                                          point:
-                                                              "${materialResults?.price}",
-                                                        ),
-                                                      ),
+                                                            child: PriceWidget(
+                                                              point:
+                                                                  "${materialResults?.price}",
+                                                            ),
+                                                          ),
+                                                ),
+                                              ),
                                             ),
                                           ),
+                                          const Expanded(child: SizedBox()),
+                                        ],
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: AlignmentDirectional.centerEnd,
+                                      child:InkWell(
+                                                            onTap: () {
+                                                              showMaterialPurchaseSheet(
+                                                                context:
+                                                                    context,
+                                                                objectNmae:
+                                                                    "الوحدة",
+                                                                balance:
+                                                                    PrefData.getUserBalance() ??
+                                                                    '0',
+
+                                                                cost:
+                                                                   materialResults?.price ??
+                                                                    "*",
+                                                                onClickBuy: () {
+                                                                  context.router
+                                                                      .maybePop();
+                                                                  pruchesBloc!.add(
+                                                                    PruchesEvent.buyMaterial(
+                                                                      materialResults?.id ??
+                                                                          '---',
+                                                                      PruchesType
+                                                                          .material,
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
+                                                            child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.only(
+                                            topRight: Radius.circular(20),
+                                            bottomRight: Radius.circular(20),
+                                          ),
+                                        ),
+                                        child: PriceWidget(
+                                          point: materialResults?.price ?? "0",
                                         ),
                                       ),
-                                      const Expanded(child: SizedBox()),
-                                    ],
-                                  ),
+                                    )),
+                                  ],
                                 ),
                               ),
                               Column(
@@ -359,7 +419,9 @@ class _MaterialDetailViewState extends State<MaterialDetailView> {
                                             showMaterialPurchaseSheet(
                                               context: context,
                                               objectNmae: "الوحدة",
-                                              balance: PrefData.getUserBalance()??'0',
+                                              balance:
+                                                  PrefData.getUserBalance() ??
+                                                  '0',
                                               cost: list[index].price ?? "0",
                                               onClickBuy: () {
                                                 context.router.maybePop();
