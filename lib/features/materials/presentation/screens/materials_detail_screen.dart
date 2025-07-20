@@ -10,6 +10,7 @@ import 'package:student_app/core/core.dart';
 import 'package:student_app/core/pruches/bloc/pruches_bloc.dart';
 import 'package:student_app/features/materials/bloc/material_bloc.dart';
 import 'package:student_app/features/materials/data/model/material_model.dart';
+import 'package:student_app/features/materials/presentation/widgets/material_detail_shimmer.dart';
 
 @RoutePage()
 class MaterialDetailScreen extends StatelessWidget {
@@ -73,7 +74,7 @@ class _MaterialDetailViewState extends State<MaterialDetailView> {
               );
             },
             loadingMaterial: () {
-              return const LoadingScreen();
+              return const MaterialDetailShimmer();
             },
             successMaterial: (MaterialResults? materialResults) {
               return SizedBox(
@@ -302,7 +303,7 @@ class _MaterialDetailViewState extends State<MaterialDetailView> {
                                           children: [
                                             AssetsManager.svg.playerIcon.svg(),
                                             Text(
-                                              "فيديو${materialResults!.videoCount} ",
+                                              "فيديو ${materialResults!.videoCount} ",
                                               style: const TextStyle(
                                                 fontSize: 14,
                                               ),
@@ -359,7 +360,9 @@ class _MaterialDetailViewState extends State<MaterialDetailView> {
                                             showMaterialPurchaseSheet(
                                               context: context,
                                               objectNmae: "الوحدة",
-                                              balance: PrefData.getUserBalance()??'0',
+                                              balance:
+                                                  PrefData.getUserBalance() ??
+                                                  '0',
                                               cost: list[index].price ?? "0",
                                               onClickBuy: () {
                                                 context.router.maybePop();

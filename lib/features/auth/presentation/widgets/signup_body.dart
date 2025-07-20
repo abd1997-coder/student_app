@@ -184,6 +184,7 @@ class _SignupBodyState extends State<SignupBody>
                   ),
                   textAlign: TextAlign.center,
                 ),
+                const SizedBox(height: 40),
               ],
             ),
           ),

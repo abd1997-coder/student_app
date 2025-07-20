@@ -16,10 +16,11 @@ class SubjectWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 120,
+      height: 140,
       padding: EdgeInsets.symmetric(vertical: 4, horizontal: 2),
       child: Stack(
         alignment: AlignmentDirectional.topCenter,
+
         children: [
           Align(
             alignment: AlignmentDirectional.bottomCenter,
@@ -40,8 +41,8 @@ class SubjectWidget extends StatelessWidget {
                 ],
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
+                // crossAxisAlignment: CrossAxisAlignment.center,
+                // mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   const SizedBox(height: 20),
                   Text(
@@ -52,7 +53,7 @@ class SubjectWidget extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(height: 3),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,

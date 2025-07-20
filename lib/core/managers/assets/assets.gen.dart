@@ -12,6 +12,21 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart' as _svg;
 import 'package:vector_graphics/vector_graphics.dart' as _vg;
 
+class $AssetsIconsGen {
+  const $AssetsIconsGen();
+
+  /// File path: assets/icons/admin_icon.png
+  AssetGenImage get adminIcon =>
+      const AssetGenImage('assets/icons/admin_icon.png');
+
+  /// File path: assets/icons/phon_icon.png
+  AssetGenImage get phonIcon =>
+      const AssetGenImage('assets/icons/phon_icon.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [adminIcon, phonIcon];
+}
+
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
@@ -54,6 +69,10 @@ class $AssetsImagesGen {
   $AssetsImagesOnboardingGen get onboarding =>
       const $AssetsImagesOnboardingGen();
 
+  /// File path: assets/images/otp_logo.png
+  AssetGenImage get otpLogo =>
+      const AssetGenImage('assets/images/otp_logo.png');
+
   /// Directory path: assets/images/temp
   $AssetsImagesTempGen get temp => const $AssetsImagesTempGen();
 
@@ -76,6 +95,7 @@ class $AssetsImagesGen {
     logo,
     materialDetail,
     noInternetBackground,
+    otpLogo,
     testBackground,
     walletIcon,
   ];
@@ -134,6 +154,9 @@ class $AssetsSvgGen {
 
   /// Directory path: assets/svg/navbar
   $AssetsSvgNavbarGen get navbar => const $AssetsSvgNavbarGen();
+
+  /// File path: assets/svg/otp_logo.svg
+  SvgGenImage get otpLogo => const SvgGenImage('assets/svg/otp_logo.svg');
 
   /// File path: assets/svg/pdf_icon.svg
   SvgGenImage get pdfIcon => const SvgGenImage('assets/svg/pdf_icon.svg');
@@ -200,6 +223,7 @@ class $AssetsSvgGen {
     instgramIcon,
     medalIcon,
     minusBalanceIcon,
+    otpLogo,
     pdfIcon,
     phoneIcon,
     playerIcon,
@@ -215,16 +239,6 @@ class $AssetsSvgGen {
     unsavedIocn,
     victoryCup,
   ];
-}
-
-
-class $AssetsPngGen {
-  const $AssetsPngGen();
-
-  /// File path: assets/svg/add_balance_icon.svg
-  SvgGenImage get backIcon =>
-      const SvgGenImage('assets/svg/png/back_icon.png');
-
 }
 
 class $AssetsTranslationsGen {
@@ -386,9 +400,9 @@ class $AssetsSvgSettingsGen {
 class AssetsManager {
   const AssetsManager._();
 
+  static const $AssetsIconsGen icons = $AssetsIconsGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
   static const $AssetsSvgGen svg = $AssetsSvgGen();
-  static const $AssetsPngGen png = $AssetsPngGen();
   static const $AssetsTranslationsGen translations = $AssetsTranslationsGen();
 }
 

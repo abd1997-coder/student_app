@@ -39,7 +39,7 @@ class _FirstItemOnboardingState extends State<FirstItemOnboarding>
 
           Text(LocaleKeys.whatIsNajahi.tr(), style: titleStyle(context)),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Text(
               LocaleKeys.najahiItIs.tr(),
               style: subTitleStyle(context),
@@ -56,8 +56,10 @@ class _FirstItemOnboardingState extends State<FirstItemOnboarding>
                 title: LocaleKeys.start,
                 color: context.colorScheme.primary,
                 onPressed: () {
-                  widget.pageController.jumpToPage(
+                  widget.pageController.animateToPage(
                     1,
+                    duration: const Duration(seconds: 1),
+                    curve: Curves.ease,
                   );
                 },
               ),

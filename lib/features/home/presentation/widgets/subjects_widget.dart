@@ -10,7 +10,7 @@ class SubjectsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 120,
+      height: 140,
       margin: const EdgeInsets.symmetric(horizontal: 12),
       child: ListView.separated(
         padding: EdgeInsets.zero,

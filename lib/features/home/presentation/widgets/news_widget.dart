@@ -51,20 +51,19 @@ class _NewsWidgetState extends State<NewsWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           children:
               sliderList.map((entry) {
+                final bool isSelected = _currentIndex == entry;
                 return GestureDetector(
                   onTap: () => carouselSliderController.jumpToPage(entry),
                   child: Container(
-                    width: 20,
+                    width: isSelected ? 50 : 20,
                     height: 6,
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.all(Radius.circular(6)),
                       color:
-                          _currentIndex == entry
+                          isSelected
                               ? context.colorScheme.primary
-                              : context.colorScheme.primary.withValues(
-                                alpha: 0.5,
-                              ),
+                              : context.colorScheme.primary.withAlpha(128),
                     ),
                   ),
                 );

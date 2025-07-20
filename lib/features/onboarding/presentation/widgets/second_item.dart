@@ -42,12 +42,12 @@ class _SecondItemOnboardingState extends State<SecondItemOnboarding>
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 12),
                     child: Text(
-                    LocaleKeys.ourFeatureMsg.tr(),
-                    style: subTitleStyle(context),
+                      LocaleKeys.ourFeatureMsg.tr(),
+                      style: subTitleStyle(context),
 
-                    textAlign: TextAlign.start,
+                      textAlign: TextAlign.start,
+                    ),
                   ),
-                  )
                 ],
               ),
             ),
@@ -65,8 +65,10 @@ class _SecondItemOnboardingState extends State<SecondItemOnboarding>
                   title: LocaleKeys.next,
                   color: context.colorScheme.secondary,
                   onPressed: () {
-                    widget.pageController.jumpToPage(
+                    widget.pageController.animateToPage(
                       2,
+                      duration: Duration(seconds: 1),
+                      curve: Curves.ease,
                     );
                   },
                 ),
