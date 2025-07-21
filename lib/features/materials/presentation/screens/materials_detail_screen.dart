@@ -285,6 +285,7 @@ class _MaterialDetailViewState extends State<MaterialDetailView> {
                                               MainAxisAlignment.center,
                                           children: [
                                             AssetsManager.svg.unitIcon.svg(),
+                                            SizedBox(width: 4),
                                             Text(
                                               "${materialResults?.units?.length} وحدة ",
                                               style: const TextStyle(
@@ -302,8 +303,9 @@ class _MaterialDetailViewState extends State<MaterialDetailView> {
                                               MainAxisAlignment.center,
                                           children: [
                                             AssetsManager.svg.playerIcon.svg(),
+                                            SizedBox(width: 4),
                                             Text(
-                                              "فيديو ${materialResults!.videoCount} ",
+                                              "${materialResults!.videoCount} فيديو",
                                               style: const TextStyle(
                                                 fontSize: 14,
                                               ),
