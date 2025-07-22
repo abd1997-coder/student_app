@@ -127,11 +127,45 @@ class CardWidget extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Text(
-                                'رصيدك هو : \n ${profileResults?.results.student?.balance} نقطة',
-                                style: MobileTextThemes().largeLabel.copyWith(
-                                  color: Palette.white,
-                                ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'رصيدك هو :',
+                                    style: MobileTextThemes().largeLabel
+                                        .copyWith(
+                                          color: Palette.white,
+                                          fontSize: 18,
+                                        ),
+                                  ),
+                                  Text(
+                                    (() {
+                                      final balance =
+                                          profileResults
+                                              ?.results
+                                              .student
+                                              ?.balance;
+                                      if (balance == null) return '0 نقطة';
+                                      final balanceStr = balance.toString();
+                                      if (balanceStr.contains('.')) {
+                                        final parts = balanceStr.split('.');
+                                        final before = parts[0];
+                                        final after = parts[1]
+                                            .padRight(2, '0')
+                                            .substring(0, 2);
+                                        return '$before.$after نقطة';
+                                      } else {
+                                        return '$balanceStr نقطة';
+                                      }
+                                    })(),
+                                    style: MobileTextThemes().largeLabel
+                                        .copyWith(
+                                          fontSize: 18,
+                                          color: Palette.stongPrimary,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -143,7 +177,7 @@ class CardWidget extends StatelessWidget {
                         },
                         child: Container(
                           padding: const EdgeInsets.all(12),
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          margin: const EdgeInsets.only(left: 32),
                           decoration: BoxDecoration(
                             color: Colors.white24,
                             borderRadius: BorderRadius.circular(16),
@@ -273,7 +307,7 @@ class DashboardShimmer extends StatelessWidget {
               ),
               Container(
                 padding: const EdgeInsets.all(12),
-                margin: const EdgeInsets.symmetric(horizontal: 10),
+                margin: const EdgeInsets.only(left: 24),
                 decoration: BoxDecoration(
                   color: Colors.white24,
                   borderRadius: BorderRadius.circular(16),

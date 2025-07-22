@@ -160,7 +160,7 @@ class _VerificationCodeViewState extends State<VerificationCodeView> {
 
                   children: <Widget>[
                     const SizedBox(height: 50),
-                    AssetsManager.images.logo.image(width: 75, height: 75),
+                    AssetsManager.images.otpLogo.image(width: 140, height: 140),
                     const SizedBox(height: 10),
                     Text(
                       'تأكيد رقم الهاتف',
@@ -203,6 +203,7 @@ class _VerificationCodeViewState extends State<VerificationCodeView> {
                         verifyAccount();
                       },
                     ),
+                    Spacer(),
                     BlocBuilder<AuthenticationBloc, AuthenticationState>(
                       buildWhen: (
                         AuthenticationState previous,
@@ -239,6 +240,7 @@ class _VerificationCodeViewState extends State<VerificationCodeView> {
                         );
                       },
                     ),
+                    Spacer(),
                   ],
                 ),
               ),
@@ -252,7 +254,7 @@ class _VerificationCodeViewState extends State<VerificationCodeView> {
 
   Padding submitButton() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
       child: GlobalButton(
         height: 65,
         controller: globalButtonController,

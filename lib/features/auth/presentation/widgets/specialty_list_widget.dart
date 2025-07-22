@@ -25,12 +25,13 @@ class SpecialtyListWidget extends StatelessWidget {
             builder: (BuildContext context, AuthenticationState state) {
               return state.maybeWhen(
                 specialtiesSucceed:
-                    (List<SpecialtyResult> specialties) => Wrap(
-                      spacing: 24,
-                      runSpacing: 24,
-                      alignment: WrapAlignment.center,
-                      runAlignment: WrapAlignment.center,
-                      crossAxisAlignment: WrapCrossAlignment.center,
+                    (List<SpecialtyResult> specialties) => GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      mainAxisSpacing: 24,
+                      crossAxisSpacing: 24,
+                      childAspectRatio: 160 / 190,
+                      // physics: const NeverScrollableScrollPhysics(),
                       children:
                           specialties.mapIndexed((
                             int index,
@@ -43,7 +44,6 @@ class SpecialtyListWidget extends StatelessWidget {
                               child: Container(
                                 width: 160,
                                 height: 190,
-
                                 decoration: BoxDecoration(
                                   borderRadius: const BorderRadius.all(
                                     Radius.circular(14),
@@ -65,9 +65,9 @@ class SpecialtyListWidget extends StatelessWidget {
                                             ],
                                           ),
                                 ),
-                                padding: const EdgeInsets.all(17),
+                                // padding: const EdgeInsets.all(17),
                                 child: Column(
-                                  spacing: 12,
+                                  mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
                                     NetworkImageWidget(
                                       url: specialty.image ?? "",
@@ -75,10 +75,13 @@ class SpecialtyListWidget extends StatelessWidget {
                                       width: 75,
                                       fit: BoxFit.fill,
                                     ),
+                                    SizedBox(height: 10),
                                     Text(
                                       specialty.name ?? " ",
                                       textAlign: TextAlign.center,
-                                      style: context.bodyLarge?.copyWith(
+
+                                      style: context.bodySmall?.copyWith(
+                                        fontSize: 18,
                                         fontWeight: FontWeight.w700,
                                         color: context.colorScheme.surface,
                                       ),

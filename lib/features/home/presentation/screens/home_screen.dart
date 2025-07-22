@@ -3,6 +3,7 @@ import 'package:student_app/features/home/bloc/home_bloc.dart';
 import 'package:student_app/features/home/data/model/home_model.dart';
 import 'package:student_app/features/home/presentation/widgets/Teachers_widget.dart';
 import 'package:student_app/features/home/presentation/widgets/card_widget.dart';
+import 'package:student_app/features/home/presentation/widgets/home_shimmer_loading.dart';
 import 'package:student_app/features/home/presentation/widgets/news_widget.dart';
 import 'package:student_app/features/home/presentation/widgets/subjects_widget.dart';
 import 'package:student_app/features/home/presentation/widgets/views_widget.dart';
@@ -49,6 +50,7 @@ class _HomeViewState extends State<HomeView> {
           builder: (BuildContext context, HomeState state) {
             return state.maybeWhen(
               successHome: (HomeResults? homeResults) {
+                // return HomeShimmerLoading();
                 return SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,14 +159,16 @@ class _HomeViewState extends State<HomeView> {
                 );
               },
               loadingHome: () {
-                return const GlobalLoading();
+                return const HomeShimmerLoading();
               },
               failedHome: (GeneralException? generalException) {
                 return Center(
-                  child: GlobalErrorWidget(generalException: generalException,
-                  onPressed: () {
-                     context.read<HomeBloc>().add(const HomeEvent.getHome());
-                  },),
+                  child: GlobalErrorWidget(
+                    generalException: generalException,
+                    onPressed: () {
+                      context.read<HomeBloc>().add(const HomeEvent.getHome());
+                    },
+                  ),
                 );
               },
               orElse: () {

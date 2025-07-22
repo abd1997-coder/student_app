@@ -27,107 +27,124 @@ class SearchableDDL<T> extends StatelessWidget {
   final Color? borderColor;
   @override
   Widget build(BuildContext context) {
-    return DropdownSearch<T>(
-      autoValidateMode: autoValidateMode,
-
-      compareFn: (T item1, T item2) {
-        return item1 == item2;
-      },
-      suffixProps: const DropdownSuffixProps(
-        dropdownButtonProps: DropdownButtonProps(
-          iconClosed: Icon(Icons.keyboard_arrow_down),
-          iconOpened: Icon(Icons.keyboard_arrow_up),
-          padding: EdgeInsets.zero,
-          iconSize: 20,
-        ),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.primaryColor.withOpacity(0.3),
+            blurRadius: 14,
+            spreadRadius: -4,
+            offset: Offset(0, 8),
+          ),
+        ],
       ),
+      child: DropdownSearch<T>(
+        autoValidateMode: autoValidateMode,
 
-      popupProps: PopupProps<T>.menu(
-        showSearchBox: showSearchBox,
-        showSelectedItems: true,
-        itemBuilder:
-            (BuildContext context, T item, bool isDisabled, bool isSelected) =>
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    item.toString(),
-                    style: context.titleSmall?.copyWith(
-                      color:
-                          isSelected
-                              ? context.colorScheme.primary
-                              : context.colorScheme.onSurface,
-                    ),
+        compareFn: (T item1, T item2) {
+          return item1 == item2;
+        },
+        suffixProps: const DropdownSuffixProps(
+          dropdownButtonProps: DropdownButtonProps(
+            iconClosed: Icon(Icons.keyboard_arrow_down),
+            iconOpened: Icon(Icons.keyboard_arrow_up),
+            padding: EdgeInsets.zero,
+            iconSize: 20,
+          ),
+        ),
+
+        popupProps: PopupProps<T>.menu(
+          showSearchBox: showSearchBox,
+          showSelectedItems: true,
+          itemBuilder:
+              (
+                BuildContext context,
+                T item,
+                bool isDisabled,
+                bool isSelected,
+              ) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  item.toString(),
+                  style: context.titleSmall?.copyWith(
+                    color:
+                        isSelected
+                            ? context.colorScheme.primary
+                            : context.colorScheme.onSurface,
                   ),
                 ),
-        menuProps: MenuProps(borderRadius: BorderRadius.circular(5)),
-        searchFieldProps: TextFieldProps(
-          style: context.bodySmall?.copyWith(fontWeight: FontWeight.w500),
-          decoration: const InputDecoration(
-            constraints: BoxConstraints(maxHeight: 46),
-            border: OutlineInputBorder(),
+              ),
+          menuProps: MenuProps(borderRadius: BorderRadius.circular(5)),
+          searchFieldProps: TextFieldProps(
+            style: context.bodySmall?.copyWith(fontWeight: FontWeight.w500),
+            decoration: const InputDecoration(
+              constraints: BoxConstraints(maxHeight: 46),
+              border: OutlineInputBorder(),
+            ),
           ),
-        ),
-        scrollbarProps: ScrollbarProps(
-          thumbColor: Theme.of(context).primaryColor,
-          trackRadius: const Radius.circular(3),
-          trackVisibility: true,
-          thumbVisibility: true,
-          radius: const Radius.circular(3),
-          thickness: 2,
-          interactive: true,
-          padding: const EdgeInsets.all(2),
-        ),
-        constraints: const BoxConstraints(maxHeight: 300),
-        fit: FlexFit.loose,
-      ),
-      decoratorProps: DropDownDecoratorProps(
-        baseStyle: context.bodySmall?.copyWith(fontWeight: FontWeight.w500),
-        decoration: InputDecoration(
-          hintStyle: context.bodySmall?.copyWith(
-            fontWeight: FontWeight.w400,
-            color: context.theme.hintColor,
-            fontSize: 11,
+          scrollbarProps: ScrollbarProps(
+            thumbColor: Theme.of(context).primaryColor,
+            trackRadius: const Radius.circular(3),
+            trackVisibility: true,
+            thumbVisibility: true,
+            radius: const Radius.circular(3),
+            thickness: 2,
+            interactive: true,
+            padding: const EdgeInsets.all(2),
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-          hintText: hintText,
-          constraints: const BoxConstraints(minHeight: 46),
+          constraints: const BoxConstraints(maxHeight: 300),
+          fit: FlexFit.loose,
+        ),
+        decoratorProps: DropDownDecoratorProps(
+          baseStyle: context.bodySmall?.copyWith(fontWeight: FontWeight.w500),
+          decoration: InputDecoration(
+            hintStyle: context.bodySmall?.copyWith(
+              fontWeight: FontWeight.w400,
+              color: context.theme.hintColor,
+              fontSize: 11,
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+            hintText: hintText,
+            constraints: const BoxConstraints(minHeight: 46),
 
-          errorBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(8)),
-            borderSide: BorderSide(color: context.colorScheme.error),
+            errorBorder: OutlineInputBorder(
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              borderSide: BorderSide(color: context.colorScheme.error),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              borderSide: BorderSide(color: context.colorScheme.error),
+            ),
+            errorStyle: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: context.labelLarge?.fontSize ?? 12,
+              color: context.colorScheme.error,
+              height: 0,
+            ),
+            errorMaxLines: 3,
+            disabledBorder: OutlineInputBorder(
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              borderSide: BorderSide(color: borderColor ?? Colors.transparent),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              borderSide: BorderSide(color: borderColor ?? Colors.transparent),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              borderSide: BorderSide(color: borderColor ?? Colors.transparent),
+            ),
+            filled: true,
+            fillColor: context.colorScheme.surface,
           ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(8)),
-            borderSide: BorderSide(color: context.colorScheme.error),
-          ),
-          errorStyle: TextStyle(
-            fontWeight: FontWeight.w400,
-            fontSize: context.labelLarge?.fontSize ?? 12,
-            color: context.colorScheme.error,
-            height: 0,
-          ),
-          errorMaxLines: 3,
-          disabledBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(8)),
-            borderSide: BorderSide(color: borderColor ?? Colors.transparent),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(8)),
-            borderSide: BorderSide(color: borderColor ?? Colors.transparent),
-          ),
-          border: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(8)),
-            borderSide: BorderSide(color: borderColor ?? Colors.transparent),
-          ),
-          filled: true,
-          fillColor: context.colorScheme.surface,
         ),
-      ),
-      items: asyncItems,
+        items: asyncItems,
 
-      onChanged: onChanged,
-      selectedItem: selectedItem,
-      validator: validator,
+        onChanged: onChanged,
+        selectedItem: selectedItem,
+        validator: validator,
+      ),
     );
   }
 }

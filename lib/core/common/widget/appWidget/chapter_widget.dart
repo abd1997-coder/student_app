@@ -10,6 +10,77 @@ import 'package:student_app/core/common/widget/price_widget.dart'
 import 'package:student_app/core/core.dart';
 import 'package:student_app/core/managers/theme/palette.dart';
 import 'package:student_app/core/pruches/bloc/pruches_bloc.dart';
+import 'dart:async';
+
+/// Widget لعرض قائمة عناصر مع staggered animation (نفسه من part_widget)
+class StaggeredAnimatedList<T> extends StatefulWidget {
+  final List<T> items;
+  final Widget Function(T item) itemBuilder;
+  final Duration initialDelay;
+  final Duration itemDelay;
+  final bool visible;
+  const StaggeredAnimatedList({
+    super.key,
+    required this.items,
+    required this.itemBuilder,
+    this.initialDelay = const Duration(milliseconds: 0),
+    this.itemDelay = const Duration(milliseconds: 80),
+    this.visible = true,
+  });
+
+  @override
+  State<StaggeredAnimatedList<T>> createState() =>
+      _StaggeredAnimatedListState<T>();
+}
+
+class _StaggeredAnimatedListState<T> extends State<StaggeredAnimatedList<T>> {
+  late List<bool> _showItems;
+
+  @override
+  void initState() {
+    super.initState();
+    _showItems = List.filled(widget.items.length, false);
+    if (widget.visible) _runAnimation();
+  }
+
+  @override
+  void didUpdateWidget(covariant StaggeredAnimatedList<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.visible && !_showItems.any((e) => e)) {
+      _showItems = List.filled(widget.items.length, false);
+      _runAnimation();
+    } else if (!widget.visible && _showItems.any((e) => e)) {
+      setState(() {
+        _showItems = List.filled(widget.items.length, false);
+      });
+    }
+  }
+
+  Future<void> _runAnimation() async {
+    await Future.delayed(widget.initialDelay);
+    for (int i = 0; i < widget.items.length; i++) {
+      if (!mounted) return;
+      setState(() => _showItems[i] = true);
+      await Future.delayed(widget.itemDelay);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: List.generate(widget.items.length, (i) {
+        return AnimatedOpacity(
+          opacity: _showItems[i] && widget.visible ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 300),
+          child:
+              _showItems[i] && widget.visible
+                  ? widget.itemBuilder(widget.items[i])
+                  : const SizedBox.shrink(),
+        );
+      }),
+    );
+  }
+}
 
 class ChapterWidget extends StatelessWidget {
   final Unit? unit;
@@ -80,9 +151,8 @@ class ChapterWidget extends StatelessWidget {
                           showMaterialPurchaseSheet(
                             context: context,
                             objectNmae: "الوحدة",
-                            balance: 
-                              PrefData.getUserBalance() ?? '0',
-                            
+                            balance: PrefData.getUserBalance() ?? '0',
+
                             cost: unit?.price ?? "*",
                             onClickBuy: () {
                               context.router.maybePop();
@@ -111,38 +181,38 @@ class ChapterWidget extends StatelessWidget {
           ),
         ),
         if (unit!.isExpanded)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 0),
-            margin: const EdgeInsets.only(bottom: 12),
-            child: Column(
-              children:
-                  (unit?.videos ?? [])
-                      .map(
-                        (VideoModel video) => Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 2,
-                                height: 12,
-                                color: Colors.grey,
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                ),
-                              ),
-                              SessionWidget(
-                                video: video,
-                                teacherName:
-                                    unit?.teachers?.first.user?.fullName ?? "",
-                                myLeason: myLeason,
-                                pruchesBloc: pruchesBloc,
-                              ),
-                            ],
+          AnimatedSize(
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeInOut,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 0),
+              margin: const EdgeInsets.only(bottom: 12),
+              child: StaggeredAnimatedList<VideoModel>(
+                items: unit?.videos ?? [],
+                visible: unit!.isExpanded,
+                itemBuilder:
+                    (VideoModel video) => Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 2,
+                            height: 12,
+                            color: Colors.grey,
+                            margin: const EdgeInsets.symmetric(horizontal: 20),
                           ),
-                        ),
-                      )
-                      .toList(),
+                          SessionWidget(
+                            video: video,
+                            teacherName:
+                                unit?.teachers?.first.user?.fullName ?? "",
+                            myLeason: myLeason,
+                            pruchesBloc: pruchesBloc,
+                          ),
+                        ],
+                      ),
+                    ),
+              ),
             ),
           ),
       ],

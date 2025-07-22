@@ -35,6 +35,14 @@ class _OtpFieldWidgetState extends State<OtpFieldWidget> {
         color: fillColor,
         borderRadius: BorderRadius.circular(Dimensions.cornerRadius10),
         border: Border.all(color: Colors.transparent),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.primaryColor.withOpacity(0.3),
+            blurRadius: 14,
+            spreadRadius: -4,
+            offset: Offset(0, 8),
+          ),
+        ],
       ),
     );
 

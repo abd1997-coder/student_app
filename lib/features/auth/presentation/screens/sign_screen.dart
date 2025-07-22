@@ -26,14 +26,13 @@ class SignView extends StatefulWidget {
   State<SignView> createState() => _SignViewState();
 }
 
-class _SignViewState extends State<SignView>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _SignViewState extends State<SignView> {
+  int _selectedIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+  void _onTabSelected(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   @override
@@ -59,45 +58,83 @@ class _SignViewState extends State<SignView>
               ),
             ),
             const SizedBox(height: 40),
-            TabBar(
-              controller: _tabController,
-              dividerColor: Colors.transparent,
-              dividerHeight: 0,
-              labelStyle: context.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-
-              physics: const NeverScrollableScrollPhysics(),
-              isScrollable: false,
-              labelColor: context.colorScheme.primary,
-              unselectedLabelColor: context.colorScheme.surface,
-              unselectedLabelStyle: context.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-              tabAlignment: TabAlignment.fill,
-
-              indicator: BoxDecoration(
-                color: context.theme.scaffoldBackgroundColor,
-
-                borderRadius: const BorderRadiusDirectional.only(
-                  topEnd: Radius.circular(16),
-                  topStart: Radius.circular(16),
+            // TabBar
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => _onTabSelected(0),
+                    child: Container(
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color:
+                            _selectedIndex == 0
+                                ? context.theme.scaffoldBackgroundColor
+                                : Colors.transparent,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(16),
+                          topRight: Radius.circular(16),
+                          bottomLeft:
+                              _selectedIndex == 1
+                                  ? Radius.circular(16)
+                                  : Radius.zero,
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      alignment: Alignment.center,
+                      child: Text(
+                        LocaleKeys.signUp.tr(),
+                        style: context.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color:
+                              _selectedIndex == 0
+                                  ? context.colorScheme.primary
+                                  : context.colorScheme.surface,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              indicatorSize: TabBarIndicatorSize.tab,
-              labelPadding: const EdgeInsets.symmetric(vertical: 8),
-              tabs: <Widget>[
-                Tab(text: LocaleKeys.signUp.tr()),
-                Tab(text: LocaleKeys.signIn.tr()),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => _onTabSelected(1),
+                    child: Container(
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color:
+                            _selectedIndex == 1
+                                ? context.theme.scaffoldBackgroundColor
+                                : Colors.transparent,
+                        borderRadius: BorderRadius.only(
+                          topLeft: const Radius.circular(16),
+                          topRight: const Radius.circular(16),
+                          bottomRight:
+                              _selectedIndex == 0
+                                  ? const Radius.circular(16)
+                                  : Radius.zero,
+                          bottomLeft: Radius.zero,
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      alignment: Alignment.center,
+                      child: Text(
+                        LocaleKeys.signIn.tr(),
+                        style: context.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color:
+                              _selectedIndex == 1
+                                  ? context.colorScheme.primary
+                                  : context.colorScheme.surface,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
             Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                physics: const NeverScrollableScrollPhysics(),
-
-                children: const <Widget>[SignupBody(), LoginBody()],
-              ),
+              child:
+                  _selectedIndex == 0 ? const SignupBody() : const LoginBody(),
             ),
           ],
         ),

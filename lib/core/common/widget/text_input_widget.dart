@@ -106,6 +106,8 @@ class TextInputWidget extends StatefulWidget {
 class _TextInputWidgetState extends State<TextInputWidget> {
   late Color fillColor;
   late Color borderColor;
+  bool hasError = false; // متغير لتتبع وجود خطأ
+  String? errorText; // لتخزين نص الخطأ
   bool isRTL(String text) {
     return intl.Bidi.detectRtlDirectionality(text);
   }
@@ -138,153 +140,199 @@ class _TextInputWidgetState extends State<TextInputWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      initialValue: widget.initialValue,
-      focusNode: widget.focusNode,
-      scrollPadding: widget.scrollPadding ?? const EdgeInsets.all(20),
-      textAlignVertical: widget.textAlignVertical ?? TextAlignVertical.center,
-      enabled: widget.enabled,
+    Color shadowColor =
+        hasError
+            ? context.colorScheme.error.withOpacity(0.3)
+            : context.theme.primaryColor.withOpacity(0.3);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: shadowColor, // لون الظل حسب وجود الخطأ
+                blurRadius: 14,
+                spreadRadius: -4, // يقلل من انتشار الظل على الجوانب
+                offset: Offset(0, 8), // يجعل الظل فقط للأسفل
+              ),
+            ],
+          ),
+          child: TextFormField(
+            initialValue: widget.initialValue,
+            focusNode: widget.focusNode,
+            scrollPadding: widget.scrollPadding ?? const EdgeInsets.all(20),
+            textAlignVertical:
+                widget.textAlignVertical ?? TextAlignVertical.center,
+            enabled: widget.enabled,
 
-      controller: widget.controller,
-      keyboardType: widget.keyboardType,
-      maxLength: widget.maxLength,
-      onTapOutside: (PointerDownEvent event) {
-        widget.onTapOutside?.call(event);
-        if (widget.readOnly) {
-          widget.focusNode.unfocus();
-        }
-      },
+            controller: widget.controller,
+            keyboardType: widget.keyboardType,
+            maxLength: widget.maxLength,
+            onTapOutside: (PointerDownEvent event) {
+              widget.onTapOutside?.call(event);
+              if (widget.readOnly) {
+                widget.focusNode.unfocus();
+              }
+            },
 
-      autovalidateMode: widget.autovalidateMode,
-      onEditingComplete: widget.onEditingComplete,
-      maxLengthEnforcement: widget.maxLengthEnforcement,
-      inputFormatters: widget.inputFormatters,
-      obscureText: widget.obscureText,
-      obscuringCharacter: '*',
-      maxLines: widget.maxLines ?? 1,
-      minLines: widget.minLines,
-      autocorrect: false,
-      enableSuggestions: false,
-      autofocus: widget.autoFocus,
-      validator: widget.validator,
-      onChanged: widget.onChanged,
-      textInputAction: widget.textInputAction,
-      cursorColor: context.colorScheme.primary,
-      style: context.bodySmall?.copyWith(
-        fontWeight: FontWeight.w500,
-        fontSize: widget.fontSize ?? context.bodySmall?.fontSize ?? 0.0,
-      ),
-      textDirection:
-          widget.textDirection ??
-          (isRTL(widget.controller?.text ?? "")
-              ? TextDirection.rtl
-              : TextDirection.ltr),
-      showCursor: widget.showCursor,
-      cursorHeight: widget.cursorHeight,
-      cursorErrorColor: context.colorScheme.error,
-      cursorWidth: 2.2,
-      cursorRadius: const Radius.circular(6),
-      buildCounter: widget.counterBuilder,
-      decoration: InputDecoration(
-        fillColor: fillColor,
-        alignLabelWithHint: true,
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: widget.vertical ?? 15,
+            autovalidateMode: widget.autovalidateMode,
+            onEditingComplete: widget.onEditingComplete,
+            maxLengthEnforcement: widget.maxLengthEnforcement,
+            inputFormatters: widget.inputFormatters,
+            obscureText: widget.obscureText,
+            obscuringCharacter: '*',
+            maxLines: widget.maxLines ?? 1,
+            minLines: widget.minLines,
+            autocorrect: false,
+            enableSuggestions: false,
+            autofocus: widget.autoFocus,
+            validator: (value) {
+              final error = widget.validator?.call(value);
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  setState(() {
+                    hasError = error != null;
+                    errorText = error;
+                  });
+                }
+              });
+              return null; // لا تعرض رسالة الخطأ الافتراضية
+            },
+            onChanged: widget.onChanged,
+            textInputAction: widget.textInputAction,
+            cursorColor: context.colorScheme.primary,
+            style: context.bodySmall?.copyWith(
+              fontWeight: FontWeight.w500,
+              fontSize: widget.fontSize ?? context.bodySmall?.fontSize ?? 0.0,
+            ),
+            textDirection:
+                widget.textDirection ??
+                (isRTL(widget.controller?.text ?? "")
+                    ? TextDirection.rtl
+                    : TextDirection.ltr),
+            showCursor: widget.showCursor,
+            cursorHeight: widget.cursorHeight,
+            cursorErrorColor: context.colorScheme.error,
+            cursorWidth: 2.2,
+            cursorRadius: const Radius.circular(6),
+            buildCounter: widget.counterBuilder,
+            decoration: InputDecoration(
+              fillColor: fillColor,
+              alignLabelWithHint: true,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: widget.vertical ?? 15,
+              ),
+              prefixIconConstraints: widget.prefixIconConstraints,
+              isDense: true,
+              prefixText: widget.prefixText,
+              prefixStyle: context.bodySmall?.copyWith(
+                color:
+                    widget.focusNode.hasFocus || !widget.isEmpty
+                        ? widget.fontColor ?? context.colorScheme.onSurface
+                        : context.theme.hintColor,
+                fontSize: widget.fontSize ?? context.bodySmall?.fontSize ?? 0.0,
+              ),
+              prefixIcon:
+                  widget.prefixSvgPathIcon != null
+                      ? Container(
+                        padding: const EdgeInsetsDirectional.only(
+                          top: 7,
+                          bottom: 7,
+                          start: 5,
+                          end: 5,
+                        ),
+                        margin: const EdgeInsets.all(5),
+                        child: SvgPicture.asset(
+                          widget.prefixSvgPathIcon!,
+                          colorFilter: ColorFilter.mode(
+                            widget.focusNode.hasFocus || !widget.isEmpty
+                                ? context.theme.primaryColor
+                                : context.theme.hintColor,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                      )
+                      : widget.prefixPadding,
+              suffixText: widget.suffixText,
+              suffixStyle: context.bodySmall?.copyWith(
+                fontWeight: FontWeight.w500,
+                fontSize: widget.fontSize ?? context.bodySmall?.fontSize ?? 0.0,
+              ),
+              suffixIcon: suffixIconCondition(context),
+              hintText: widget.hintText,
+              hintStyle: context.bodySmall?.copyWith(
+                fontSize: widget.fontSize ?? context.bodySmall?.fontSize ?? 0.0,
+                fontWeight: FontWeight.w400,
+                color: widget.fontColor ?? context.theme.hintColor,
+              ),
+              hintTextDirection:
+                  context.locale.isRTL ? TextDirection.rtl : TextDirection.ltr,
+              hintMaxLines: 3,
+              labelText: widget.labelText,
+              labelStyle: context.bodySmall?.copyWith(
+                fontSize: widget.fontSize ?? context.bodySmall?.fontSize ?? 0.0,
+                fontWeight: FontWeight.w600,
+                color: widget.fontColor ?? context.theme.hintColor,
+              ),
+              filled: true,
+              focusedBorder: OutlineInputBorder(
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                borderSide: BorderSide(color: borderColor),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                borderSide: BorderSide(color: borderColor),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                borderSide: BorderSide(color: borderColor),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                borderSide: BorderSide(color: context.colorScheme.error),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                borderSide: BorderSide(color: context.colorScheme.error),
+              ),
+              errorStyle: const TextStyle(
+                height: 0,
+                color: Colors.transparent,
+              ), // إخفاء رسالة الخطأ الافتراضية
+              errorMaxLines: 3,
+            ),
+            onFieldSubmitted:
+                widget.onFieldSubmitted ??
+                (String? value) {
+                  fieldFocusChange(
+                    context: context,
+                    focusNode: widget.focusNode,
+                    nextFocusNode: widget.nextFocusNode,
+                  );
+                },
+            expands: widget.expands,
+            readOnly: widget.readOnly,
+            onTap: widget.onTap,
+          ),
         ),
-        prefixIconConstraints: widget.prefixIconConstraints,
-        isDense: true,
-        prefixText: widget.prefixText,
-        prefixStyle: context.bodySmall?.copyWith(
-          color:
-              widget.focusNode.hasFocus || !widget.isEmpty
-                  ? widget.fontColor ?? context.colorScheme.onSurface
-                  : context.theme.hintColor,
-          fontSize: widget.fontSize ?? context.bodySmall?.fontSize ?? 0.0,
-        ),
-        prefixIcon:
-            widget.prefixSvgPathIcon != null
-                ? Container(
-                  padding: const EdgeInsetsDirectional.only(
-                    top: 7,
-                    bottom: 7,
-                    start: 5,
-                    end: 5,
-                  ),
-                  margin: const EdgeInsets.all(5),
-                  child: SvgPicture.asset(
-                    widget.prefixSvgPathIcon!,
-                    colorFilter: ColorFilter.mode(
-                      widget.focusNode.hasFocus || !widget.isEmpty
-                          ? context.theme.primaryColor
-                          : context.theme.hintColor,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                )
-                : widget.prefixPadding,
-        suffixText: widget.suffixText,
-        suffixStyle: context.bodySmall?.copyWith(
-          fontWeight: FontWeight.w500,
-          fontSize: widget.fontSize ?? context.bodySmall?.fontSize ?? 0.0,
-        ),
-        suffixIcon: suffixIconCondition(context),
-        hintText: widget.hintText,
-        hintStyle: context.bodySmall?.copyWith(
-          fontSize: widget.fontSize ?? context.bodySmall?.fontSize ?? 0.0,
-          fontWeight: FontWeight.w400,
-          color: widget.fontColor ?? context.theme.hintColor,
-        ),
-        hintTextDirection:
-            context.locale.isRTL ? TextDirection.rtl : TextDirection.ltr,
-        hintMaxLines: 3,
-        labelText: widget.labelText,
-        labelStyle: context.bodySmall?.copyWith(
-          fontSize: widget.fontSize ?? context.bodySmall?.fontSize ?? 0.0,
-          fontWeight: FontWeight.w600,
-          color: widget.fontColor ?? context.theme.hintColor,
-        ),
-        filled: true,
-        focusedBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(8)),
-          borderSide: BorderSide(color: borderColor),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(8)),
-          borderSide: BorderSide(color: borderColor),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(8)),
-          borderSide: BorderSide(color: borderColor),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(8)),
-          borderSide: BorderSide(color: context.colorScheme.error),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(8)),
-          borderSide: BorderSide(color: context.colorScheme.error),
-        ),
-        errorStyle: TextStyle(
-          fontWeight: FontWeight.w400,
-          fontSize: context.labelLarge?.fontSize ?? 12,
-          color: context.colorScheme.error,
-          height: 0,
-        ),
-        errorMaxLines: 3,
-      ),
-      onFieldSubmitted:
-          widget.onFieldSubmitted ??
-          (String? value) {
-            fieldFocusChange(
-              context: context,
-              focusNode: widget.focusNode,
-              nextFocusNode: widget.nextFocusNode,
-            );
-          },
-      expands: widget.expands,
-      readOnly: widget.readOnly,
-      onTap: widget.onTap,
+        if (hasError && errorText != null)
+          Padding(
+            padding: const EdgeInsetsDirectional.only(start: 12, top: 2),
+            child: Text(
+              errorText!,
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: context.labelLarge?.fontSize ?? 12,
+                color: context.colorScheme.error,
+                height: 1.2,
+              ),
+              maxLines: 3,
+            ),
+          ),
+      ],
     );
   }
 
