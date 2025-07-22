@@ -53,7 +53,7 @@ dependencies:
   youtube_muxer_2025:
     path: ./youtube_muxer_2025
   
-  youtube_player_flutter: ^9.1.1
+  youtube_explode_dart: ^2.5.1
 
   root_checker_plus: ^0.0.4
   collection: ^1.19.1

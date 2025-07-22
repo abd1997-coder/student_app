@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:student_app/core/common/function/dilaogs.dart';
 import 'package:student_app/core/common/models/video_model.dart';
 import 'package:student_app/core/common/widget/bottomSheets/download_sheet_content.dart';
 import 'package:student_app/core/common/widget/bottomSheets/question_sheet_content.dart';
 import 'package:student_app/core/core.dart';
 import 'package:student_app/features/player/presentation/widgets/player_widget.dart';
+import 'package:student_app/features/player/presentation/widgets/player_widget_2.dart';
 import 'package:youtube_muxer_2025/youtube_muxer_2025.dart';
 import 'package:video_player/video_player.dart';
-import 'package:auto_route/auto_route.dart';
 
 @RoutePage()
 class PlayerScreen extends StatefulWidget {
@@ -37,7 +38,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   VideoPlayerController? _localVideoController;
   final bool _isDecodedVideoReady = false;
   int? progressPercent;
-
+  int playerType = 1;
   void _handleQualitiesReady(List<VideoQuality> qualities) {
     setState(() {
       _availableQualities = qualities;
@@ -60,7 +61,25 @@ class _PlayerScreenState extends State<PlayerScreen> {
             expandedHeight: 250,
             pinned: true,
             elevation: 0,
-            leading: const SizedBox(),
+            leading: IconButton(
+              onPressed: () async {
+                int? selectedPlayer = await showPlayerDialog(context);
+                if (selectedPlayer != null) {
+                  if (selectedPlayer == 1) {
+                    setState(() {
+                      playerType = 1;
+                    });
+                  } else {
+                    setState(() {
+                      playerType = 2;
+                    });
+                  }
+                } else {
+                  print("Dialog was dismissed without selection");
+                }
+              },
+              icon: const Icon(Icons.settings, color: Colors.white),
+            ),
             actions: <Widget>[
               IconButton(
                 icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
@@ -70,13 +89,15 @@ class _PlayerScreenState extends State<PlayerScreen> {
               ),
             ],
             flexibleSpace:
-                (widget.videoModel.videoUrl != null &&
-                        widget.videoModel.videoUrl!.isNotEmpty)
-                    ? PlayerWidget(
-                      videourl: widget.videoModel.videoUrl!,
-                      onQualitiesReady: _handleQualitiesReady,
-                    )
-                    : const Center(child: Text("هناك خطأ 357")),
+                (playerType == 1)
+                    ? (widget.videoModel.videoUrl != null &&
+                            widget.videoModel.videoUrl!.isNotEmpty)
+                        ? PlayerWidget(
+                          videourl: widget.videoModel.videoUrl!,
+                          onQualitiesReady: _handleQualitiesReady,
+                        )
+                        : const Center(child: Text("هناك خطأ 357"))
+                    : PlayerWidgetTow(videourl: widget.videoModel.videoUrl!),
           ),
 
           // Header below video
@@ -100,14 +121,19 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        Text(
-                          widget.videoModel.title ?? "-",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            widget.videoModel.title ?? "-",
+                            maxLines: 2,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         Expanded(
+                          flex: 2,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[

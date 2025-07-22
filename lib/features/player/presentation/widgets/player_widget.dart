@@ -38,6 +38,12 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    controller?.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (!hasInternet || playerFailed) {
       return playerErrorWidget();
@@ -54,7 +60,6 @@ class _PlayerWidgetState extends State<PlayerWidget> {
       onStateChanged: (YPlayerStatus status) {},
       errorWidget: playerErrorWidget(),
       aspectRatio: 3 / 9,
-      
     );
   }
 

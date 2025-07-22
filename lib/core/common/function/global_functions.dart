@@ -6,7 +6,8 @@ import 'package:student_app/core/common/models/video_model.dart';
 
 class GlobalFunctions {
   static String formatDurationString(String input) {
-    final List<int> parts = input.split(':').map(int.parse).toList(); // [0, 8, 49]
+    final List<int> parts =
+        input.split(':').map(int.parse).toList(); // [0, 8, 49]
 
     final int hours = parts[0];
     final int minutes = parts[1];
@@ -59,5 +60,15 @@ class GlobalFunctions {
     final Directory dir = await getApplicationDocumentsDirectory();
     final String path = '${dir.path}/protected/$videoId.lockedvid';
     return File(path).exists();
+  }
+
+  static String? extractYouTubeId(String url) {
+    final regex = RegExp(
+      r'(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})',
+      caseSensitive: false,
+    );
+
+    final match = regex.firstMatch(url);
+    return match != null ? match.group(1) : null;
   }
 }
