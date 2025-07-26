@@ -15,7 +15,7 @@ import 'generated/codegen_loader.g.dart';
 // test 678x`
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-    MediaKit.ensureInitialized();
+  MediaKit.ensureInitialized();
 
   YPlayerInitializer.ensureInitialized();
   await DatabaseHelper.instance.initDatabase();

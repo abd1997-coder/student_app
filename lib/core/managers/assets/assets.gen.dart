@@ -54,6 +54,10 @@ class $AssetsImagesGen {
   AssetGenImage get leaderBoardBackground =>
       const AssetGenImage('assets/images/leader_board_background.png');
 
+  /// File path: assets/images/left_wave.png
+  AssetGenImage get leftWave =>
+      const AssetGenImage('assets/images/left_wave.png');
+
   /// File path: assets/images/logo.png
   AssetGenImage get logo => const AssetGenImage('assets/images/logo.png');
 
@@ -72,6 +76,10 @@ class $AssetsImagesGen {
   /// File path: assets/images/otp_logo.png
   AssetGenImage get otpLogo =>
       const AssetGenImage('assets/images/otp_logo.png');
+
+  /// File path: assets/images/right_wave.png
+  AssetGenImage get rightWave =>
+      const AssetGenImage('assets/images/right_wave.png');
 
   /// Directory path: assets/images/temp
   $AssetsImagesTempGen get temp => const $AssetsImagesTempGen();
@@ -92,10 +100,12 @@ class $AssetsImagesGen {
     gradientBlueToPink,
     gradientPinkToBlue,
     leaderBoardBackground,
+    leftWave,
     logo,
     materialDetail,
     noInternetBackground,
     otpLogo,
+    rightWave,
     testBackground,
     walletIcon,
   ];

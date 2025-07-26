@@ -1,5 +1,6 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:student_app/core/core.dart';
 
 class SearchableDDL<T> extends StatelessWidget {
@@ -104,7 +105,7 @@ class SearchableDDL<T> extends StatelessWidget {
               color: context.theme.hintColor,
               fontSize: 11,
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+            contentPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 2.h),
             hintText: hintText,
             constraints: const BoxConstraints(minHeight: 46),
 

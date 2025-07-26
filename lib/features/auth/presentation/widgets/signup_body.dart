@@ -1,5 +1,6 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:student_app/core/core.dart';
 import 'package:student_app/features/auth/bloc/authentication_bloc.dart';
 import 'package:student_app/features/auth/data/params/sign_up_params.dart';
@@ -112,79 +113,116 @@ class _SignupBodyState extends State<SignupBody>
           orElse: () {},
         );
       },
-      child: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
+      child: Container(
+        color: context.theme.scaffoldBackgroundColor,
         child: Container(
-          padding: const EdgeInsetsDirectional.symmetric(
-            horizontal: 38,
-            vertical: 8,
-          ),
-
+          margin: EdgeInsets.all(1.h),
           decoration: BoxDecoration(
-            color: context.theme.scaffoldBackgroundColor,
-            borderRadius: const BorderRadiusDirectional.only(
-              topEnd: Radius.circular(16),
-            ),
+            borderRadius: BorderRadius.circular(16),
+            // color: Colors.black,
           ),
-          child: Form(
-            autovalidateMode: _autoValidateMode,
-            key: formKey,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
             child: Column(
-              children: <Widget>[
-                nameTextField(),
-                const SizedBox(height: 10),
-                phoneNumberTextField(),
-                const SizedBox(height: 10),
-                parentPhoneNumberTextField(),
-                const SizedBox(height: 10),
-                DateOfBirthWidget(
-                  onChange: (DateTime p0) {
-                    setState(() {
-                      birthDate = DateFormat('yyyy-MM-dd').format(p0);
-                    });
-                  },
-                ),
-                const SizedBox(height: 10),
-                selectGenders(),
-                const SizedBox(height: 10),
-                selectGrades(),
-                const SizedBox(height: 10),
-                passwordTextField(),
-                const SizedBox(height: 10),
-                confirmPasswordTextField(),
-                const SizedBox(height: 28),
-
-                submitButton(),
-
-                const SizedBox(height: 17),
-                Text.rich(
-                  TextSpan(
-                    children: <InlineSpan>[
-                      TextSpan(
-                        text: 'بإنشائك الحساب يعني موافقتك على',
-                        style: context.labelLarge,
-                      ),
-                      TextSpan(
-                        text: ' شروط الاستخدام ',
-                        style: context.labelLarge?.copyWith(
-                          color: context.colorScheme.primary,
-                        ),
-                      ),
-                      TextSpan(text: ' و ', style: context.labelLarge),
-                      TextSpan(
-                        text: ' سياسة الخصوصية ',
-                        style: context.labelLarge?.copyWith(
-                          color: context.colorScheme.primary,
-                        ),
-                      ),
-                      TextSpan(text: 'الخاصة بنا', style: context.labelLarge),
-                    ],
+              children: [
+                Container(
+                  padding: EdgeInsetsDirectional.symmetric(
+                    horizontal: 8.w,
+                    vertical: 1.h,
                   ),
-                  textAlign: TextAlign.center,
+
+                  decoration: BoxDecoration(
+                    color: context.theme.scaffoldBackgroundColor,
+                    borderRadius: const BorderRadiusDirectional.only(
+                      topEnd: Radius.circular(16),
+                    ),
+                  ),
+                  child: Form(
+                    autovalidateMode: _autoValidateMode,
+                    key: formKey,
+                    child: Column(
+                      children: <Widget>[
+                        nameTextField(),
+                        SizedBox(height: 1.h),
+                        phoneNumberTextField(),
+                        SizedBox(height: 1.h),
+                        parentPhoneNumberTextField(),
+                        SizedBox(height: 1.h),
+                        DateOfBirthWidget(
+                          onChange: (DateTime p0) {
+                            setState(() {
+                              birthDate = DateFormat('yyyy-MM-dd').format(p0);
+                            });
+                          },
+                        ),
+                        SizedBox(height: 1.h),
+                        selectGenders(),
+                        SizedBox(height: 1.h),
+                        selectGrades(),
+                        SizedBox(height: 1.h),
+                        passwordTextField(),
+                        SizedBox(height: 1.h),
+                        confirmPasswordTextField(),
+                        SizedBox(height: 1.h),
+                      ],
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 40),
+                Material(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8.w),
+                    width: 100.w,
+                    decoration: BoxDecoration(
+                      color: context.theme.scaffoldBackgroundColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(.2),
+                          blurRadius: 6.px,
+                          blurStyle: BlurStyle.outer,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 1.h),
+                        submitButton(),
+
+                        const SizedBox(height: 17),
+                        Text.rich(
+                          TextSpan(
+                            children: <InlineSpan>[
+                              TextSpan(
+                                text: 'بإنشائك الحساب يعني موافقتك على',
+                                style: context.labelLarge,
+                              ),
+                              TextSpan(
+                                text: ' شروط الاستخدام ',
+                                style: context.labelLarge?.copyWith(
+                                  color: context.colorScheme.primary,
+                                ),
+                              ),
+                              TextSpan(text: ' و ', style: context.labelLarge),
+                              TextSpan(
+                                text: ' سياسة الخصوصية ',
+                                style: context.labelLarge?.copyWith(
+                                  color: context.colorScheme.primary,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'الخاصة بنا',
+                                style: context.labelLarge,
+                              ),
+                            ],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 3.h),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

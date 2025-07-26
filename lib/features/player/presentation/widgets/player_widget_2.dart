@@ -362,22 +362,24 @@ class _PlayerWidgetState extends State<PlayerWidgetTow> {
         )
         : SizedBox(
           // Loading state (when video is not yet initialized)
-          height: 200,
+          // height: 200,
           child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const CircularProgressIndicator(color: Palette.primary),
-                const SizedBox(height: 16),
-                Text(
-                  status,
-                  style: const TextStyle(
-                    color: Colors.white,
-                  ), // Adjust color as per your app's theme
-                  textAlign: TextAlign.center,
-                ),
-              ],
+            // child: Column(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            child: Center(
+              child: const CircularProgressIndicator(color: Palette.primary),
             ),
+            // const SizedBox(height: 16),
+            // Text(
+            //   status,
+            //   style: const TextStyle(
+            //     color: Colors.white,
+            //   ), // Adjust color as per your app's theme
+            //   textAlign: TextAlign.center,
+            // ),
+            //   ],
+            // ),
           ),
         );
   }

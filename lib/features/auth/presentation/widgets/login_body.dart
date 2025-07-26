@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:student_app/core/core.dart';
 import 'package:student_app/features/auth/data/data.dart';
 
@@ -93,7 +94,7 @@ class _LoginBodyState extends State<LoginBody>
             key: formKey,
             child: Column(
               children: <Widget>[
-                const SizedBox(height: 15),
+                SizedBox(height: 3.h),
 
                 Text(
                   '“ الرجاء إدخال بيانات تسجيل الدخول الخاصة بك للوصول إلى حسابك “ ',
@@ -102,12 +103,12 @@ class _LoginBodyState extends State<LoginBody>
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                const SizedBox(height: 48),
+                SizedBox(height: 5.h),
                 phoneNumberTextField(),
-                const SizedBox(height: 23),
+                SizedBox(height: 2.h),
                 passwordTextField(),
 
-                const SizedBox(height: 30),
+                SizedBox(height: 10.h),
                 GlobalButton(
                   height: 65,
                   controller: globalButtonController,

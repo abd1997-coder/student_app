@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 import '../../core.dart';
 
@@ -223,7 +224,7 @@ class _TextInputWidgetState extends State<TextInputWidget> {
               alignLabelWithHint: true,
               contentPadding: EdgeInsets.symmetric(
                 horizontal: 10,
-                vertical: widget.vertical ?? 15,
+                vertical: widget.vertical ?? 2.h,
               ),
               prefixIconConstraints: widget.prefixIconConstraints,
               isDense: true,
@@ -266,7 +267,7 @@ class _TextInputWidgetState extends State<TextInputWidget> {
               hintStyle: context.bodySmall?.copyWith(
                 fontSize: widget.fontSize ?? context.bodySmall?.fontSize ?? 0.0,
                 fontWeight: FontWeight.w400,
-                color: widget.fontColor ?? context.theme.hintColor,
+                color: context.theme.hintColor ?? context.theme.hintColor,
               ),
               hintTextDirection:
                   context.locale.isRTL ? TextDirection.rtl : TextDirection.ltr,
